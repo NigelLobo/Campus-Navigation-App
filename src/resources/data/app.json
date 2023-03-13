@@ -1,0 +1,22 @@
+{
+    "users": [
+        {
+            "username": null,
+            "hashedPassword": null,
+            "isAdmin": true,
+            "favouritePOIListIDs": [0,1,2,3]
+        }
+    ],
+    "POIList": [
+        {
+            "name": "MC 130",
+            "id": 0,
+            "type": "CLASSROOM",
+            "posX": 100,
+            "posY": 340,
+            "map": "MIDDLESEX",
+            "floorNum": 1
+        }
+        
+    ]
+}
