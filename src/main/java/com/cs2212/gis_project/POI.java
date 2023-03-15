@@ -1,3 +1,5 @@
+package com.cs2212.gis_project;
+
 
 public class POI {
     
