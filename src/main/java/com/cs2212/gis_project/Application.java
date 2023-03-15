@@ -8,26 +8,26 @@ import java.awt.*;
 import java.util.*;
 
 /**
+ * This class has functions critical to the application and handles all GUI
+ * operations.
  *
  * @author nlobo9
  */
 public class Application extends javax.swing.JFrame {
 
-    private String activeMapName;
-    //private Map activeMap;
+    private String activeMap;
+    //private Map activeMapObj;
     //private Map map = new Map();
     //activePOilist array needed??
     private HashMap<Category, Boolean> activeLayers = new HashMap<>();
-    
+
     /**
      * Creates new form GUI
      */
     public Application() {
         initComponents();
-        
-        
+
         //activeMap = new Map();
-        
         loginFailLabel.setVisible(false);
         //set all layer types to active
         this.activeLayers.put(Category.CLASSROOM, true);
@@ -36,46 +36,51 @@ public class Application extends javax.swing.JFrame {
         this.activeLayers.put(Category.WASHROOM, true);
         this.activeLayers.put(Category.ELEVATOR, true);
     }
-    
+
     /**
-     * Start the application. 
+     * Start the application (after login).
      */
     public void start() {
-       
+        //generate all the UI components for main part of application.  
     }
-    
+
     /**
-     * Exit the application. 
+     * Exit the application.
      */
-    public void exit() {}
-    
+    public void exit() {
+        //may not need this function
+    }
+
     /**
      * Finds the desired POI object from the current map.
+     *
      * @param search name of the POI eg. "MC 105"
      * @return reference to desired POI object
      */
 //    public POI findPOI(String search) {
 //    
 //    }
-    
     /**
      * Changes the map that is being displayed.
-     * @param name 
+     *
+     * @param name
      */
     public void changeMap(String name) {
         //does this need to throw a custom exception?
     }
-    
+
     /**
      * Returns the currently displayed map name
+     *
      * @return name of active map
      */
     public String getActiveMap() {
         return this.activeMap;
     }
-    
+
     /**
      * Alters the visibility of a POI layer
+     *
      * @param type the group of layers to alter (Classroom, Lab, etc.)
      * @param active true to make visible, false to make invisible
      */
@@ -197,17 +202,18 @@ public class Application extends javax.swing.JFrame {
         System.out.println(usernameTextField.getText());
         System.out.println(String.valueOf(passwordField.getPassword()));
 
-      if (System.login(usernameTextField.getText(), String.valueOf(passwordField.getPassword()))) {
-      
-      }
-      else {
-          loginFailLabel.setVisible(true);
-      }
-        //login success. Remove login page components and move to application UI
-        for (Component c : jPanel1.getComponents()) {
-            jPanel1.remove(c);            
+        //login with user's credentials, else handle login failure
+        if (GIS_System.login(usernameTextField.getText(), String.valueOf(passwordField.getPassword()))) {
+            //login success. Remove login page components and move to application UI
+            for (Component c : jPanel1.getComponents()) {
+                jPanel1.remove(c);
+            }
+            jPanel1.repaint();
+            start(); //move to main application screen
+        } else {
+            loginFailLabel.setVisible(true);
         }
-        jPanel1.repaint();
+
     }//GEN-LAST:event_loginButtonActionPerformed
 
     private void passwordFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordFieldActionPerformed
