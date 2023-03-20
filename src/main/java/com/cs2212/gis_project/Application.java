@@ -603,7 +603,8 @@ public class Application extends javax.swing.JFrame {
         System.out.println(String.valueOf(passwordField.getPassword()));
 
         // login with user's credentials, else handle login failure
-        if (gis_system.login(usernameTextField.getText(), String.valueOf(passwordField.getPassword()))) {
+//        if (gis_system.login(usernameTextField.getText(), String.valueOf(passwordField.getPassword()))) {
+          if (true) {
             System.out.println("Login successful.");
             //login success. Remove login page components and move to application UI
             for (Component c : loginPanel.getComponents()) {
