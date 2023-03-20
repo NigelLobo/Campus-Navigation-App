@@ -16,19 +16,25 @@ import java.util.*;
 public class Application extends javax.swing.JFrame {
 
     private String activeMap;
+    private User activeUser;
     //private Map activeMapObj;
-    //private Map map = new Map();
-    //activePOilist array needed??
+    //private Map map = new Map("MIDDLESEX");
+    //need a list of poi's some
     private HashMap<Category, Boolean> activeLayers = new HashMap<>();
+    private GIS_System gis_system = GIS_System.getInstance();
 
     /**
      * Creates new form GUI
      */
     public Application() {
         initComponents();
-
+        buildingSelectPanel.setVisible(false);
+        buildingPanel.setVisible(false);
+        layerPanel.setVisible(false);
+        customPanel.setVisible(false);
         //activeMap = new Map();
         loginFailLabel.setVisible(false);
+        blackMenuPanel.setVisible(false);
         //set all layer types to active
         this.activeLayers.put(Category.CLASSROOM, true);
         this.activeLayers.put(Category.RESTAURANT, true);
@@ -40,8 +46,12 @@ public class Application extends javax.swing.JFrame {
     /**
      * Start the application (after login).
      */
-    public void start() {
-        //generate all the UI components for main part of application.  
+    public void start(String chosenBuilding) {
+        System.out.println(chosenBuilding + " chosen...");
+        buildingSelectPanel.setVisible(false);
+        mapPanel.setVisible(true);
+        blackMenuPanel.setVisible(true);
+        
     }
 
     /**
@@ -98,14 +108,38 @@ public class Application extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        loginPanel = new javax.swing.JPanel();
         usernameTextField = new javax.swing.JTextField();
         usernameLabel = new javax.swing.JLabel();
         passwordField = new javax.swing.JPasswordField();
         passwordLabel = new javax.swing.JLabel();
         loginButton = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        loginPageLabel = new javax.swing.JLabel();
         loginFailLabel = new javax.swing.JLabel();
+        westernLogoLabel = new javax.swing.JLabel();
+        group42Label = new javax.swing.JLabel();
+        buildingSelectPanel = new javax.swing.JPanel();
+        selectBuildingLabel = new javax.swing.JLabel();
+        mcButton = new javax.swing.JButton();
+        mcLabel = new javax.swing.JLabel();
+        ahButton = new javax.swing.JButton();
+        ahLabel = new javax.swing.JLabel();
+        ncbLabel = new javax.swing.JLabel();
+        ncbButton = new javax.swing.JButton();
+        westernLogo2 = new javax.swing.JLabel();
+        mapPanel = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        blackMenuPanel = new javax.swing.JPanel();
+        helpButton = new javax.swing.JButton();
+        buildingMenuButton = new javax.swing.JButton();
+        layersMenuButton = new javax.swing.JButton();
+        customMenuButton = new javax.swing.JButton();
+        buildingPanel = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        layerPanel = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        customPanel = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -132,60 +166,337 @@ public class Application extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        jLabel1.setText("Login Page");
+        loginPageLabel.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        loginPageLabel.setText("Login Page");
 
         loginFailLabel.setForeground(new java.awt.Color(255, 0, 0));
         loginFailLabel.setText("Username and/or password is incorrect. Try again.");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        westernLogoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/westernLogo.png"))); // NOI18N
+
+        group42Label.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        group42Label.setText("Group 42 - CS2212 GIS Project");
+
+        javax.swing.GroupLayout loginPanelLayout = new javax.swing.GroupLayout(loginPanel);
+        loginPanel.setLayout(loginPanelLayout);
+        loginPanelLayout.setHorizontalGroup(
+            loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(loginPanelLayout.createSequentialGroup()
                 .addGap(24, 24, 24)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(loginFailLabel)
-                    .addComponent(jLabel1)
-                    .addComponent(loginButton)
-                    .addComponent(passwordLabel)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(usernameLabel)
-                        .addComponent(usernameTextField)
-                        .addComponent(passwordField, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)))
-                .addContainerGap(675, Short.MAX_VALUE))
+                .addGroup(loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(loginPageLabel)
+                    .addGroup(loginPanelLayout.createSequentialGroup()
+                        .addGroup(loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(loginFailLabel)
+                            .addComponent(loginButton)
+                            .addComponent(passwordLabel)
+                            .addGroup(loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(usernameLabel)
+                                .addComponent(usernameTextField)
+                                .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(116, 116, 116)
+                        .addComponent(westernLogoLabel)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, loginPanelLayout.createSequentialGroup()
+                .addContainerGap(464, Short.MAX_VALUE)
+                .addComponent(group42Label)
+                .addGap(204, 204, 204))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(38, 38, 38)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 133, Short.MAX_VALUE)
-                .addComponent(usernameLabel)
+        loginPanelLayout.setVerticalGroup(
+            loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(loginPanelLayout.createSequentialGroup()
+                .addComponent(loginPageLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(usernameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(passwordLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(group42Label)
+                .addGap(99, 99, 99)
+                .addGroup(loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(loginPanelLayout.createSequentialGroup()
+                        .addComponent(usernameLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(usernameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(passwordLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(loginButton)
+                        .addGap(24, 24, 24)
+                        .addComponent(loginFailLabel))
+                    .addComponent(westernLogoLabel))
+                .addContainerGap(247, Short.MAX_VALUE))
+        );
+
+        selectBuildingLabel.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        selectBuildingLabel.setText("Select a Building");
+
+        mcButton.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        mcButton.setText("Middlesex College");
+        mcButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mcButtonActionPerformed(evt);
+            }
+        });
+
+        mcLabel.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
+        mcLabel.setText("MC");
+
+        ahButton.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        ahButton.setText("Alumni Hall");
+        ahButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ahButtonActionPerformed(evt);
+            }
+        });
+
+        ahLabel.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
+        ahLabel.setText("AH");
+
+        ncbLabel.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
+        ncbLabel.setText("NCB");
+
+        ncbButton.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        ncbButton.setText("North Campus Building");
+        ncbButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ncbButtonActionPerformed(evt);
+            }
+        });
+
+        westernLogo2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/westernLogo.png"))); // NOI18N
+
+        javax.swing.GroupLayout buildingSelectPanelLayout = new javax.swing.GroupLayout(buildingSelectPanel);
+        buildingSelectPanel.setLayout(buildingSelectPanelLayout);
+        buildingSelectPanelLayout.setHorizontalGroup(
+            buildingSelectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(buildingSelectPanelLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(buildingSelectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(selectBuildingLabel)
+                    .addComponent(mcButton, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(71, 71, 71)
+                .addGroup(buildingSelectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(buildingSelectPanelLayout.createSequentialGroup()
+                        .addComponent(ahButton, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(52, 52, 52)
+                        .addComponent(ncbButton, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(westernLogo2))
+                .addContainerGap(287, Short.MAX_VALUE))
+            .addGroup(buildingSelectPanelLayout.createSequentialGroup()
+                .addGap(156, 156, 156)
+                .addComponent(mcLabel)
+                .addGap(295, 295, 295)
+                .addComponent(ahLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(ncbLabel)
+                .addGap(204, 204, 204))
+        );
+        buildingSelectPanelLayout.setVerticalGroup(
+            buildingSelectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(buildingSelectPanelLayout.createSequentialGroup()
+                .addGroup(buildingSelectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(buildingSelectPanelLayout.createSequentialGroup()
+                        .addGap(28, 28, 28)
+                        .addComponent(selectBuildingLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, buildingSelectPanelLayout.createSequentialGroup()
+                        .addContainerGap(162, Short.MAX_VALUE)
+                        .addComponent(westernLogo2)
+                        .addGap(58, 58, 58)))
+                .addGroup(buildingSelectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ncbButton, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ahButton, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(mcButton, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(loginButton)
-                .addGap(32, 32, 32)
-                .addComponent(loginFailLabel)
-                .addGap(104, 104, 104))
+                .addGroup(buildingSelectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ncbLabel)
+                    .addComponent(ahLabel)
+                    .addComponent(mcLabel))
+                .addGap(259, 259, 259))
+        );
+
+        blackMenuPanel.setBackground(new java.awt.Color(0, 0, 0));
+
+        helpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/help.png"))); // NOI18N
+        helpButton.setBorderPainted(false);
+        helpButton.setContentAreaFilled(false);
+        helpButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
+
+        buildingMenuButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/building.png"))); // NOI18N
+        buildingMenuButton.setBorderPainted(false);
+        buildingMenuButton.setContentAreaFilled(false);
+        buildingMenuButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buildingMenuButtonActionPerformed(evt);
+            }
+        });
+
+        layersMenuButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/layers.png"))); // NOI18N
+        layersMenuButton.setBorderPainted(false);
+        layersMenuButton.setContentAreaFilled(false);
+        layersMenuButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                layersMenuButtonActionPerformed(evt);
+            }
+        });
+
+        customMenuButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/create.png"))); // NOI18N
+        customMenuButton.setBorderPainted(false);
+        customMenuButton.setContentAreaFilled(false);
+        customMenuButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                customMenuButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout blackMenuPanelLayout = new javax.swing.GroupLayout(blackMenuPanel);
+        blackMenuPanel.setLayout(blackMenuPanelLayout);
+        blackMenuPanelLayout.setHorizontalGroup(
+            blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(blackMenuPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(helpButton)
+                    .addComponent(buildingMenuButton)
+                    .addComponent(layersMenuButton)
+                    .addComponent(customMenuButton))
+                .addContainerGap(47, Short.MAX_VALUE))
+        );
+        blackMenuPanelLayout.setVerticalGroup(
+            blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, blackMenuPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(buildingMenuButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(layersMenuButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(customMenuButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(helpButton)
+                .addGap(82, 82, 82))
+        );
+
+        buildingPanel.setBackground(new java.awt.Color(255, 153, 153));
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setText("Buildings");
+
+        javax.swing.GroupLayout buildingPanelLayout = new javax.swing.GroupLayout(buildingPanel);
+        buildingPanel.setLayout(buildingPanelLayout);
+        buildingPanelLayout.setHorizontalGroup(
+            buildingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(buildingPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addContainerGap(56, Short.MAX_VALUE))
+        );
+        buildingPanelLayout.setVerticalGroup(
+            buildingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(buildingPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addContainerGap(220, Short.MAX_VALUE))
+        );
+
+        layerPanel.setBackground(new java.awt.Color(255, 153, 153));
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel2.setText("Layers");
+
+        javax.swing.GroupLayout layerPanelLayout = new javax.swing.GroupLayout(layerPanel);
+        layerPanel.setLayout(layerPanelLayout);
+        layerPanelLayout.setHorizontalGroup(
+            layerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layerPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addContainerGap(81, Short.MAX_VALUE))
+        );
+        layerPanelLayout.setVerticalGroup(
+            layerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layerPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addContainerGap(266, Short.MAX_VALUE))
+        );
+
+        customPanel.setBackground(new java.awt.Color(255, 153, 153));
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel3.setText("Custom");
+
+        javax.swing.GroupLayout customPanelLayout = new javax.swing.GroupLayout(customPanel);
+        customPanel.setLayout(customPanelLayout);
+        customPanelLayout.setHorizontalGroup(
+            customPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(customPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3)
+                .addContainerGap(71, Short.MAX_VALUE))
+        );
+        customPanelLayout.setVerticalGroup(
+            customPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(customPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3)
+                .addContainerGap(230, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout mapPanelLayout = new javax.swing.GroupLayout(mapPanel);
+        mapPanel.setLayout(mapPanelLayout);
+        mapPanelLayout.setHorizontalGroup(
+            mapPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(mapPanelLayout.createSequentialGroup()
+                .addGroup(mapPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(mapPanelLayout.createSequentialGroup()
+                        .addComponent(blackMenuPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(buildingPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(mapPanelLayout.createSequentialGroup()
+                        .addGap(131, 131, 131)
+                        .addGroup(mapPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(layerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(customPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 885, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        mapPanelLayout.setVerticalGroup(
+            mapPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1)
+            .addComponent(blackMenuPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(mapPanelLayout.createSequentialGroup()
+                .addComponent(buildingPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(layerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(customPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(loginPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(buildingSelectPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(mapPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 22, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 176, Short.MAX_VALUE)
+                .addComponent(loginPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(buildingSelectPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(mapPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -202,15 +513,19 @@ public class Application extends javax.swing.JFrame {
         System.out.println(usernameTextField.getText());
         System.out.println(String.valueOf(passwordField.getPassword()));
 
-        //login with user's credentials, else handle login failure
-        if (GIS_System.login(usernameTextField.getText(), String.valueOf(passwordField.getPassword()))) {
+        // login with user's credentials, else handle login failure
+        if (gis_system.login(usernameTextField.getText(), String.valueOf(passwordField.getPassword()))) {
+            System.out.println("Login successful.");
             //login success. Remove login page components and move to application UI
-            for (Component c : jPanel1.getComponents()) {
-                jPanel1.remove(c);
+            for (Component c : loginPanel.getComponents()) {
+                loginPanel.remove(c);
             }
-            jPanel1.repaint();
-            start(); //move to main application screen
+            loginPanel.repaint();
+            loginPanel.setVisible(false);
+            buildingSelectPanel.setVisible(true);
+            
         } else {
+            System.out.println("Login Failed.");
             loginFailLabel.setVisible(true);
         }
 
@@ -218,7 +533,54 @@ public class Application extends javax.swing.JFrame {
 
     private void passwordFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordFieldActionPerformed
         // TODO add your handling code here:
+        
     }//GEN-LAST:event_passwordFieldActionPerformed
+
+    private void mcButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mcButtonActionPerformed
+        // TODO add your handling code here:
+        start("MIDDLESEX COLLEGE");
+    }//GEN-LAST:event_mcButtonActionPerformed
+
+    private void ahButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ahButtonActionPerformed
+        // TODO add your handling code here:
+        start("ALUMNI HALL");
+    }//GEN-LAST:event_ahButtonActionPerformed
+
+    private void ncbButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ncbButtonActionPerformed
+        // TODO add your handling code here:
+        start("NORTH CAMPUS BUILDING");
+    }//GEN-LAST:event_ncbButtonActionPerformed
+
+    private void helpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpButtonActionPerformed
+        // TODO add your handling code here:
+        System.out.println("Help Screen");
+    }//GEN-LAST:event_helpButtonActionPerformed
+
+    private void buildingMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buildingMenuButtonActionPerformed
+        // TODO add your handling code here:
+        System.out.println("Building");
+        buildingPanel.setVisible(true);
+        layerPanel.setVisible(false);
+        customPanel.setVisible(false);
+    }//GEN-LAST:event_buildingMenuButtonActionPerformed
+
+    private void layersMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_layersMenuButtonActionPerformed
+        // TODO add your handling code here:
+        System.out.println("Layer");        
+        buildingPanel.setVisible(false);
+        layerPanel.setVisible(true);
+        customPanel.setVisible(false);
+
+    }//GEN-LAST:event_layersMenuButtonActionPerformed
+
+    private void customMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customMenuButtonActionPerformed
+        // TODO add your handling code here:
+        System.out.println("Create");
+        buildingPanel.setVisible(false);
+        layerPanel.setVisible(false);
+        customPanel.setVisible(true);
+
+    }//GEN-LAST:event_customMenuButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -257,13 +619,37 @@ public class Application extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton ahButton;
+    private javax.swing.JLabel ahLabel;
+    private javax.swing.JPanel blackMenuPanel;
+    private javax.swing.JButton buildingMenuButton;
+    private javax.swing.JPanel buildingPanel;
+    private javax.swing.JPanel buildingSelectPanel;
+    private javax.swing.JButton customMenuButton;
+    private javax.swing.JPanel customPanel;
+    private javax.swing.JLabel group42Label;
+    private javax.swing.JButton helpButton;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel layerPanel;
+    private javax.swing.JButton layersMenuButton;
     private javax.swing.JButton loginButton;
     private javax.swing.JLabel loginFailLabel;
+    private javax.swing.JLabel loginPageLabel;
+    private javax.swing.JPanel loginPanel;
+    private javax.swing.JPanel mapPanel;
+    private javax.swing.JButton mcButton;
+    private javax.swing.JLabel mcLabel;
+    private javax.swing.JButton ncbButton;
+    private javax.swing.JLabel ncbLabel;
     private javax.swing.JPasswordField passwordField;
     private javax.swing.JLabel passwordLabel;
+    private javax.swing.JLabel selectBuildingLabel;
     private javax.swing.JLabel usernameLabel;
     private javax.swing.JTextField usernameTextField;
+    private javax.swing.JLabel westernLogo2;
+    private javax.swing.JLabel westernLogoLabel;
     // End of variables declaration//GEN-END:variables
 }
