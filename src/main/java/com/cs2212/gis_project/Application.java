@@ -6,6 +6,7 @@ package com.cs2212.gis_project;
 
 import java.awt.*;
 import java.util.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * This class has functions critical to the application and handles all GUI
@@ -75,8 +76,8 @@ public class Application extends javax.swing.JFrame {
      *
      * @param name
      */
-    public void changeMap(String name) {
-        //does this need to throw a custom exception?
+    public void changeMap(String buildingName, String floorLevel) {
+        //change the image icon that the JLabel for the map points to???
     }
 
     /**
@@ -136,10 +137,15 @@ public class Application extends javax.swing.JFrame {
         customMenuButton = new javax.swing.JButton();
         buildingPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        closeBuilding = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        buildingTree = new javax.swing.JTree();
         layerPanel = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
+        closeLayer = new javax.swing.JLabel();
         customPanel = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
+        closeCustom = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -384,27 +390,91 @@ public class Application extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("Buildings");
 
+        closeBuilding.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/icons8-close-window-16.png"))); // NOI18N
+        closeBuilding.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                closeBuildingMouseClicked(evt);
+            }
+        });
+
+        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("root");
+        javax.swing.tree.DefaultMutableTreeNode treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Middlesex College");
+        javax.swing.tree.DefaultMutableTreeNode treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Floor 0");
+        treeNode2.add(treeNode3);
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Floor 1");
+        treeNode2.add(treeNode3);
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Floor 2");
+        treeNode2.add(treeNode3);
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Floor 3");
+        treeNode2.add(treeNode3);
+        treeNode1.add(treeNode2);
+        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Alumni Hall");
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Floor 1");
+        treeNode2.add(treeNode3);
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Floor 2");
+        treeNode2.add(treeNode3);
+        treeNode1.add(treeNode2);
+        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("North Campus Building");
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Floor 1");
+        treeNode2.add(treeNode3);
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Floor 2");
+        treeNode2.add(treeNode3);
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Floor 3");
+        treeNode2.add(treeNode3);
+        treeNode1.add(treeNode2);
+        buildingTree.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
+        buildingTree.setRootVisible(false);
+        buildingTree.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                buildingTreeMouseClicked(evt);
+            }
+        });
+        buildingTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
+            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
+                buildingTreeValueChanged(evt);
+            }
+        });
+        jScrollPane2.setViewportView(buildingTree);
+
         javax.swing.GroupLayout buildingPanelLayout = new javax.swing.GroupLayout(buildingPanel);
         buildingPanel.setLayout(buildingPanelLayout);
         buildingPanelLayout.setHorizontalGroup(
             buildingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(buildingPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addContainerGap(56, Short.MAX_VALUE))
+                .addGroup(buildingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(buildingPanelLayout.createSequentialGroup()
+                        .addComponent(jScrollPane2)
+                        .addContainerGap())
+                    .addGroup(buildingPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(closeBuilding))))
         );
         buildingPanelLayout.setVerticalGroup(
             buildingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(buildingPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addContainerGap(220, Short.MAX_VALUE))
+                .addGroup(buildingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(buildingPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel1))
+                    .addComponent(closeBuilding))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane2)
+                .addContainerGap())
         );
 
         layerPanel.setBackground(new java.awt.Color(255, 153, 153));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel2.setText("Layers");
+
+        closeLayer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/icons8-close-window-16.png"))); // NOI18N
+        closeLayer.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                closeLayerMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout layerPanelLayout = new javax.swing.GroupLayout(layerPanel);
         layerPanel.setLayout(layerPanelLayout);
@@ -413,20 +483,31 @@ public class Application extends javax.swing.JFrame {
             .addGroup(layerPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel2)
-                .addContainerGap(81, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
+                .addComponent(closeLayer))
         );
         layerPanelLayout.setVerticalGroup(
             layerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layerPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel2)
-                .addContainerGap(266, Short.MAX_VALUE))
+                .addContainerGap(216, Short.MAX_VALUE))
+            .addGroup(layerPanelLayout.createSequentialGroup()
+                .addComponent(closeLayer)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         customPanel.setBackground(new java.awt.Color(255, 153, 153));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel3.setText("Custom");
+
+        closeCustom.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/icons8-close-window-16.png"))); // NOI18N
+        closeCustom.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                closeCustomMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout customPanelLayout = new javax.swing.GroupLayout(customPanel);
         customPanel.setLayout(customPanelLayout);
@@ -435,14 +516,18 @@ public class Application extends javax.swing.JFrame {
             .addGroup(customPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel3)
-                .addContainerGap(71, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
+                .addComponent(closeCustom))
         );
         customPanelLayout.setVerticalGroup(
             customPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(customPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel3)
-                .addContainerGap(230, Short.MAX_VALUE))
+                .addContainerGap(102, Short.MAX_VALUE))
+            .addGroup(customPanelLayout.createSequentialGroup()
+                .addComponent(closeCustom)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout mapPanelLayout = new javax.swing.GroupLayout(mapPanel);
@@ -453,15 +538,18 @@ public class Application extends javax.swing.JFrame {
                 .addGroup(mapPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(mapPanelLayout.createSequentialGroup()
                         .addComponent(blackMenuPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(buildingPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(mapPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(mapPanelLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(buildingPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mapPanelLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(customPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(mapPanelLayout.createSequentialGroup()
                         .addGap(131, 131, 131)
-                        .addGroup(mapPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(layerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(customPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(layerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 885, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 858, Short.MAX_VALUE)
                 .addContainerGap())
         );
         mapPanelLayout.setVerticalGroup(
@@ -473,7 +561,8 @@ public class Application extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(layerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(customPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(customPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(50, 50, 50))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -582,6 +671,47 @@ public class Application extends javax.swing.JFrame {
 
     }//GEN-LAST:event_customMenuButtonActionPerformed
 
+    private void closeBuildingMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_closeBuildingMouseClicked
+        // TODO add your handling code here:
+        buildingPanel.setVisible(false);
+        layerPanel.setVisible(false);
+        customPanel.setVisible(false);
+    }//GEN-LAST:event_closeBuildingMouseClicked
+
+    private void closeLayerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_closeLayerMouseClicked
+        // TODO add your handling code here:
+        buildingPanel.setVisible(false);
+        layerPanel.setVisible(false);
+        customPanel.setVisible(false);
+    }//GEN-LAST:event_closeLayerMouseClicked
+
+    private void closeCustomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_closeCustomMouseClicked
+        // TODO add your handling code here:        
+        buildingPanel.setVisible(false);
+        layerPanel.setVisible(false);
+        customPanel.setVisible(false);
+    }//GEN-LAST:event_closeCustomMouseClicked
+
+    private void buildingTreeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buildingTreeMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_buildingTreeMouseClicked
+
+    private void buildingTreeValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_buildingTreeValueChanged
+        // TODO add your handling code here:
+        //get selected node from Building JTree
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) buildingTree.getLastSelectedPathComponent();
+        
+        //change map to desired building and floor
+        String buildingName = node.getParent().toString();
+        String floorLevel = node.toString();
+        //only change map if a floor was selected as well
+        if (!buildingName.equalsIgnoreCase("root")) {
+            changeMap(buildingName, floorLevel);
+            System.out.println("Changed map to " + buildingName + " " + floorLevel);
+        }
+        
+    }//GEN-LAST:event_buildingTreeValueChanged
+
     /**
      * @param args the command line arguments
      */
@@ -625,6 +755,10 @@ public class Application extends javax.swing.JFrame {
     private javax.swing.JButton buildingMenuButton;
     private javax.swing.JPanel buildingPanel;
     private javax.swing.JPanel buildingSelectPanel;
+    private javax.swing.JTree buildingTree;
+    private javax.swing.JLabel closeBuilding;
+    private javax.swing.JLabel closeCustom;
+    private javax.swing.JLabel closeLayer;
     private javax.swing.JButton customMenuButton;
     private javax.swing.JPanel customPanel;
     private javax.swing.JLabel group42Label;
@@ -633,6 +767,7 @@ public class Application extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel layerPanel;
     private javax.swing.JButton layersMenuButton;
     private javax.swing.JButton loginButton;
