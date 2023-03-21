@@ -5,7 +5,9 @@
 package com.cs2212.gis_project;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.*;
+import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
@@ -17,7 +19,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class Application extends javax.swing.JFrame {
 
     private String activeMap;
-    private User activeUser;
+    private User activeUser;    
+    private BufferedImage mapImage;
+
+    private String[] mapFiles = { "maps/mc0.png", "maps/mc1.png", "maps/mc2.png", "maps/mc3.png", "maps/mc4.png"};
     //private Map activeMapObj;
     //private Map map = new Map("MIDDLESEX");
     //need a list of poi's some
@@ -33,6 +38,7 @@ public class Application extends javax.swing.JFrame {
         buildingPanel.setVisible(false);
         layerPanel.setVisible(false);
         customPanel.setVisible(false);
+        mapImageScrollPane.setVisible(false);
         //activeMap = new Map();
         loginFailLabel.setVisible(false);
         blackMenuPanel.setVisible(false);
@@ -51,7 +57,11 @@ public class Application extends javax.swing.JFrame {
         System.out.println(chosenBuilding + " chosen...");
         buildingSelectPanel.setVisible(false);
         mapPanel.setVisible(true);
+        mapImageScrollPane.setVisible(true);
         blackMenuPanel.setVisible(true);
+        
+        //set map image for chosen building. Default to floor 0. 
+        
         
     }
 
@@ -95,9 +105,13 @@ public class Application extends javax.swing.JFrame {
      * @param type the group of layers to alter (Classroom, Lab, etc.)
      * @param active true to make visible, false to make invisible
      */
-    public void toggleLayer(Category type, boolean active) {
+    public void toggleLayer(Category    type, boolean active) {
         //update the activeLayers hashmap 
         this.activeLayers.put(type, active);
+        System.out.println(type + " layer set to " + Boolean.toString(active));
+        
+        //repaint the map to only include active layers
+        
     }
 
     /**
@@ -129,12 +143,14 @@ public class Application extends javax.swing.JFrame {
         ncbButton = new javax.swing.JButton();
         westernLogo2 = new javax.swing.JLabel();
         mapPanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        mapImageScrollPane = new javax.swing.JScrollPane();
+        jLabel4 = new javax.swing.JLabel();
         blackMenuPanel = new javax.swing.JPanel();
         helpButton = new javax.swing.JButton();
         buildingMenuButton = new javax.swing.JButton();
         layersMenuButton = new javax.swing.JButton();
         customMenuButton = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
         buildingPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         closeBuilding = new javax.swing.JLabel();
@@ -143,9 +159,17 @@ public class Application extends javax.swing.JFrame {
         layerPanel = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         closeLayer = new javax.swing.JLabel();
+        classroomCheckbox = new javax.swing.JCheckBox();
+        restaurantCheckbox = new javax.swing.JCheckBox();
+        labCheckbox = new javax.swing.JCheckBox();
+        washroomCheckbox = new javax.swing.JCheckBox();
+        elevatorCheckbox = new javax.swing.JCheckBox();
         customPanel = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         closeCustom = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -204,7 +228,7 @@ public class Application extends javax.swing.JFrame {
                         .addComponent(westernLogoLabel)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, loginPanelLayout.createSequentialGroup()
-                .addContainerGap(464, Short.MAX_VALUE)
+                .addContainerGap(344, Short.MAX_VALUE)
                 .addComponent(group42Label)
                 .addGap(204, 204, 204))
         );
@@ -286,7 +310,7 @@ public class Application extends javax.swing.JFrame {
                         .addGap(52, 52, 52)
                         .addComponent(ncbButton, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(westernLogo2))
-                .addContainerGap(287, Short.MAX_VALUE))
+                .addContainerGap(167, Short.MAX_VALUE))
             .addGroup(buildingSelectPanelLayout.createSequentialGroup()
                 .addGap(156, 156, 156)
                 .addComponent(mcLabel)
@@ -305,7 +329,7 @@ public class Application extends javax.swing.JFrame {
                         .addComponent(selectBuildingLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, buildingSelectPanelLayout.createSequentialGroup()
-                        .addContainerGap(162, Short.MAX_VALUE)
+                        .addContainerGap(186, Short.MAX_VALUE)
                         .addComponent(westernLogo2)
                         .addGap(58, 58, 58)))
                 .addGroup(buildingSelectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -320,11 +344,19 @@ public class Application extends javax.swing.JFrame {
                 .addGap(259, 259, 259))
         );
 
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/maps/mc0.png"))); // NOI18N
+        mapImageScrollPane.setViewportView(jLabel4);
+
         blackMenuPanel.setBackground(new java.awt.Color(0, 0, 0));
 
         helpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/help.png"))); // NOI18N
         helpButton.setBorderPainted(false);
         helpButton.setContentAreaFilled(false);
+        helpButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                helpButtonMouseClicked(evt);
+            }
+        });
         helpButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpButtonActionPerformed(evt);
@@ -358,17 +390,26 @@ public class Application extends javax.swing.JFrame {
             }
         });
 
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setText("4 °C ");
+
         javax.swing.GroupLayout blackMenuPanelLayout = new javax.swing.GroupLayout(blackMenuPanel);
         blackMenuPanel.setLayout(blackMenuPanelLayout);
         blackMenuPanelLayout.setHorizontalGroup(
             blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(blackMenuPanelLayout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(helpButton)
-                    .addComponent(buildingMenuButton)
-                    .addComponent(layersMenuButton)
-                    .addComponent(customMenuButton))
+                    .addGroup(blackMenuPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(helpButton)
+                            .addComponent(buildingMenuButton)
+                            .addComponent(layersMenuButton)
+                            .addComponent(customMenuButton)))
+                    .addGroup(blackMenuPanelLayout.createSequentialGroup()
+                        .addGap(29, 29, 29)
+                        .addComponent(jLabel5)))
                 .addContainerGap(47, Short.MAX_VALUE))
         );
         blackMenuPanelLayout.setVerticalGroup(
@@ -382,7 +423,9 @@ public class Application extends javax.swing.JFrame {
                 .addComponent(customMenuButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(helpButton)
-                .addGap(82, 82, 82))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel5)
+                .addGap(35, 35, 35))
         );
 
         buildingPanel.setBackground(new java.awt.Color(255, 153, 153));
@@ -460,7 +503,7 @@ public class Application extends javax.swing.JFrame {
                         .addComponent(jLabel1))
                     .addComponent(closeBuilding))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -476,25 +519,80 @@ public class Application extends javax.swing.JFrame {
             }
         });
 
+        classroomCheckbox.setText("Classroom");
+        classroomCheckbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                classroomCheckboxActionPerformed(evt);
+            }
+        });
+
+        restaurantCheckbox.setText("Restaurant");
+        restaurantCheckbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                restaurantCheckboxActionPerformed(evt);
+            }
+        });
+
+        labCheckbox.setText("Lab");
+        labCheckbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                labCheckboxActionPerformed(evt);
+            }
+        });
+
+        washroomCheckbox.setText("Washroom");
+        washroomCheckbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                washroomCheckboxActionPerformed(evt);
+            }
+        });
+
+        elevatorCheckbox.setText("Elevator");
+        elevatorCheckbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                elevatorCheckboxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layerPanelLayout = new javax.swing.GroupLayout(layerPanel);
         layerPanel.setLayout(layerPanelLayout);
         layerPanelLayout.setHorizontalGroup(
             layerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layerPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
-                .addComponent(closeLayer))
+                .addGroup(layerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layerPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(closeLayer))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layerPanelLayout.createSequentialGroup()
+                        .addGroup(layerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(elevatorCheckbox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(washroomCheckbox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(labCheckbox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(restaurantCheckbox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(classroomCheckbox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap())))
         );
         layerPanelLayout.setVerticalGroup(
             layerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layerPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel2)
-                .addContainerGap(216, Short.MAX_VALUE))
-            .addGroup(layerPanelLayout.createSequentialGroup()
-                .addComponent(closeLayer)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGroup(layerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layerPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel2))
+                    .addComponent(closeLayer))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(classroomCheckbox)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(restaurantCheckbox)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(labCheckbox)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(washroomCheckbox)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(elevatorCheckbox)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         customPanel.setBackground(new java.awt.Color(255, 153, 153));
@@ -509,6 +607,27 @@ public class Application extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setText("Create POI");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Create POI");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("Create POI");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout customPanelLayout = new javax.swing.GroupLayout(customPanel);
         customPanel.setLayout(customPanelLayout);
         customPanelLayout.setHorizontalGroup(
@@ -516,18 +635,27 @@ public class Application extends javax.swing.JFrame {
             .addGroup(customPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(closeCustom))
+            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         customPanelLayout.setVerticalGroup(
             customPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(customPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel3)
-                .addContainerGap(102, Short.MAX_VALUE))
-            .addGroup(customPanelLayout.createSequentialGroup()
-                .addComponent(closeCustom)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGroup(customPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(customPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel3))
+                    .addComponent(closeCustom))
+                .addGap(18, 18, 18)
+                .addComponent(jButton1)
+                .addGap(18, 18, 18)
+                .addComponent(jButton2)
+                .addGap(18, 18, 18)
+                .addComponent(jButton3)
+                .addGap(0, 8, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout mapPanelLayout = new javax.swing.GroupLayout(mapPanel);
@@ -535,34 +663,29 @@ public class Application extends javax.swing.JFrame {
         mapPanelLayout.setHorizontalGroup(
             mapPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mapPanelLayout.createSequentialGroup()
-                .addGroup(mapPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(mapPanelLayout.createSequentialGroup()
-                        .addComponent(blackMenuPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(mapPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(mapPanelLayout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(buildingPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mapPanelLayout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(customPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(mapPanelLayout.createSequentialGroup()
-                        .addGap(131, 131, 131)
-                        .addComponent(layerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addComponent(blackMenuPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 858, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGroup(mapPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(buildingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(layerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(customPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mapImageScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE))
         );
         mapPanelLayout.setVerticalGroup(
             mapPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
             .addComponent(blackMenuPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(mapPanelLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mapPanelLayout.createSequentialGroup()
                 .addComponent(buildingPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(layerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(customPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(50, 50, 50))
+                .addComponent(customPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(mapPanelLayout.createSequentialGroup()
+                .addGap(42, 42, 42)
+                .addComponent(mapImageScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 722, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(104, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -577,9 +700,7 @@ public class Application extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 176, Short.MAX_VALUE)
-                .addComponent(loginPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(loginPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                     .addContainerGap()
@@ -713,6 +834,49 @@ public class Application extends javax.swing.JFrame {
         
     }//GEN-LAST:event_buildingTreeValueChanged
 
+    private void helpButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_helpButtonMouseClicked
+        // TODO add your handling code here:
+                JOptionPane.showMessageDialog(this, "Current User: user.getName(). more info...", "Help", JOptionPane.INFORMATION_MESSAGE);
+
+    }//GEN-LAST:event_helpButtonMouseClicked
+
+    private void classroomCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_classroomCheckboxActionPerformed
+        // TODO add your handling code here:
+        toggleLayer(Category.CLASSROOM, classroomCheckbox.isSelected());
+    }//GEN-LAST:event_classroomCheckboxActionPerformed
+
+    private void restaurantCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restaurantCheckboxActionPerformed
+        // TODO add your handling code here:
+        toggleLayer(Category.RESTAURANT, restaurantCheckbox.isSelected());
+    }//GEN-LAST:event_restaurantCheckboxActionPerformed
+
+    private void labCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_labCheckboxActionPerformed
+        // TODO add your handling code here:
+        toggleLayer(Category.LAB, labCheckbox.isSelected());
+    }//GEN-LAST:event_labCheckboxActionPerformed
+
+    private void washroomCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_washroomCheckboxActionPerformed
+        // TODO add your handling code here:
+        toggleLayer(Category.WASHROOM, washroomCheckbox.isSelected());
+    }//GEN-LAST:event_washroomCheckboxActionPerformed
+
+    private void elevatorCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elevatorCheckboxActionPerformed
+        // TODO add your handling code here:
+        toggleLayer(Category.ELEVATOR, elevatorCheckbox.isSelected());
+    }//GEN-LAST:event_elevatorCheckboxActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -757,24 +921,32 @@ public class Application extends javax.swing.JFrame {
     private javax.swing.JPanel buildingPanel;
     private javax.swing.JPanel buildingSelectPanel;
     private javax.swing.JTree buildingTree;
+    private javax.swing.JCheckBox classroomCheckbox;
     private javax.swing.JLabel closeBuilding;
     private javax.swing.JLabel closeCustom;
     private javax.swing.JLabel closeLayer;
     private javax.swing.JButton customMenuButton;
     private javax.swing.JPanel customPanel;
+    private javax.swing.JCheckBox elevatorCheckbox;
     private javax.swing.JLabel group42Label;
     private javax.swing.JButton helpButton;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JCheckBox labCheckbox;
     private javax.swing.JPanel layerPanel;
     private javax.swing.JButton layersMenuButton;
     private javax.swing.JButton loginButton;
     private javax.swing.JLabel loginFailLabel;
     private javax.swing.JLabel loginPageLabel;
     private javax.swing.JPanel loginPanel;
+    private javax.swing.JScrollPane mapImageScrollPane;
     private javax.swing.JPanel mapPanel;
     private javax.swing.JButton mcButton;
     private javax.swing.JLabel mcLabel;
@@ -782,9 +954,11 @@ public class Application extends javax.swing.JFrame {
     private javax.swing.JLabel ncbLabel;
     private javax.swing.JPasswordField passwordField;
     private javax.swing.JLabel passwordLabel;
+    private javax.swing.JCheckBox restaurantCheckbox;
     private javax.swing.JLabel selectBuildingLabel;
     private javax.swing.JLabel usernameLabel;
     private javax.swing.JTextField usernameTextField;
+    private javax.swing.JCheckBox washroomCheckbox;
     private javax.swing.JLabel westernLogo2;
     private javax.swing.JLabel westernLogoLabel;
     // End of variables declaration//GEN-END:variables
