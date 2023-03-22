@@ -5,7 +5,7 @@
 package com.cs2212.gis_project;
 
 /**
- *
+ * Category enumeration for POI layer types
  * @author nlobo9
  */
 public enum Category {
@@ -13,5 +13,5 @@ public enum Category {
     RESTAURANT,
     LAB,
     WASHROOM,
-    ELEVATOR
+    ELEVATOR;
 }
