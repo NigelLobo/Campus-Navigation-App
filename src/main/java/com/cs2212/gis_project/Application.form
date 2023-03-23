@@ -337,13 +337,9 @@
                   <Component id="layerPanel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="customPanel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="131" max="32767" attributes="0"/>
               </Group>
-              <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
-                  <Component id="mapImageScrollPane" min="-2" pref="722" max="-2" attributes="0"/>
-                  <EmptySpace pref="104" max="32767" attributes="0"/>
-              </Group>
+              <Component id="mapImageScrollPane" alignment="1" pref="868" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
@@ -352,10 +348,10 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="jLabel4">
+            <Component class="javax.swing.JLabel" name="mapImageLabel">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/maps/mc0.png"/>
+                  <Image iconType="3" name="/maps/MIDDLESEX_COLLEGE_LEVEL_2.png"/>
                 </Property>
               </Properties>
             </Component>
@@ -490,7 +486,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
-                              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                              <Component id="buildingChangeLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
                               <Component id="closeBuilding" min="-2" max="-2" attributes="0"/>
                           </Group>
@@ -504,19 +500,19 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                              <Component id="buildingChangeLabel" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="closeBuilding" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" pref="215" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jScrollPane2" min="-2" pref="283" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="jLabel1">
+            <Component class="javax.swing.JLabel" name="buildingChangeLabel">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="18" style="1"/>
@@ -544,7 +540,7 @@
                 <Component class="javax.swing.JTree" name="buildingTree">
                   <Properties>
                     <Property name="model" type="javax.swing.tree.TreeModel" editor="org.netbeans.modules.form.editors2.TreeModelEditor">
-                      <TreeModel code="root&#xa; Middlesex College&#xa;  Floor 0&#xa;  Floor 1&#xa;  Floor 2&#xa;  Floor 3&#xa; Alumni Hall&#xa;  Floor 1&#xa;  Floor 2&#xa; North Campus Building&#xa;  Floor 1&#xa;  Floor 2&#xa;  Floor 3"/>
+                      <TreeModel code="root&#xa; Middlesex College&#xa;  Level 2&#xa;  Level 3&#xa;  Level 4&#xa;  Level 5&#xa;  Level 6&#xa; Alumni Hall&#xa;  Level 2&#xa;  Level 3&#xa;  Level 4&#xa; North Campus Building&#xa;  Level 1&#xa;  Level 2&#xa;  Level 3&#xa;  Level 4&#xa;  Level 5"/>
                     </Property>
                     <Property name="rootVisible" type="boolean" value="false"/>
                   </Properties>
@@ -574,7 +570,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
-                              <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                              <Component id="layerSelectLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
                               <Component id="closeLayer" min="-2" max="-2" attributes="0"/>
                           </Group>
@@ -598,7 +594,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                              <Component id="layerSelectLabel" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="closeLayer" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -618,7 +614,7 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="jLabel2">
+            <Component class="javax.swing.JLabel" name="layerSelectLabel">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="18" style="1"/>
@@ -690,13 +686,13 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                      <Component id="customSelectLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="closeCustom" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="jButton1" alignment="1" max="32767" attributes="0"/>
-                  <Component id="jButton2" alignment="1" max="32767" attributes="0"/>
-                  <Component id="jButton3" alignment="1" max="32767" attributes="0"/>
+                  <Component id="createPOIButton" alignment="1" max="32767" attributes="0"/>
+                  <Component id="editPOIButton" alignment="1" max="32767" attributes="0"/>
+                  <Component id="deletePOIButton" alignment="1" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -705,23 +701,23 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                              <Component id="customSelectLabel" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="closeCustom" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                      <Component id="createPOIButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="jButton2" min="-2" max="-2" attributes="0"/>
+                      <Component id="editPOIButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="jButton3" min="-2" max="-2" attributes="0"/>
+                      <Component id="deletePOIButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="8" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="jLabel3">
+            <Component class="javax.swing.JLabel" name="customSelectLabel">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="18" style="1"/>
@@ -739,28 +735,28 @@
                 <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="closeCustomMouseClicked"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="jButton1">
+            <Component class="javax.swing.JButton" name="createPOIButton">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Create POI"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="createPOIButtonActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="jButton2">
+            <Component class="javax.swing.JButton" name="editPOIButton">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Create POI"/>
+                <Property name="text" type="java.lang.String" value="Edit POI"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editPOIButtonActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="jButton3">
+            <Component class="javax.swing.JButton" name="deletePOIButton">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Create POI"/>
+                <Property name="text" type="java.lang.String" value="Delete POI"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton3ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deletePOIButtonActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>
