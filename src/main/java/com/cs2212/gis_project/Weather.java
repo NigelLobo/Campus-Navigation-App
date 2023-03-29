@@ -29,13 +29,13 @@ import org.json.simple.parser.ParseException;
  * @author Daniel Hoang
  */
 public class Weather {
-
+    
     
     HttpClient client = HttpClient.newHttpClient();
     int londonLat;
     int londonLng;
     JSONObject weatherAPIJSON;
-    String url = "https://api.open-meteo.com/v1/forecast?latitude=42.98&longitude=-81.23&daily=temperature_2m_max,temperature_2m_min&timezone=America%2FNew_York";
+    String url = "https://api.open-meteo.com/v1/forecast?latitude=42.98&longitude=-81.23&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=America%2FNew_York";
     HttpResponse<String> response;
     String responsebody;
     public Weather() {
@@ -55,10 +55,9 @@ public class Weather {
             responsebody = response.body();
             return responsebody;
         } catch (Exception e) {
-            System.out.println("Pull Request Failed");
+              return "Pull Request Succeeded";
 
-        }
-           return "Pull Request Succeeded";     
+        }    
     }
     
     public JSONObject getWeather(){
@@ -73,5 +72,14 @@ public class Weather {
         }
     }
     
-
+    public double getTodaysTemp(){
+        
+        try{
+        JSONObject current = (JSONObject) weatherAPIJSON.get("current_weather");
+        double current_temp = (double) current.get("temperature");
+        return current_temp;
+        } catch (Exception e){
+            return Integer.MAX_VALUE;
+        }
+    }
 }
