@@ -63,11 +63,12 @@ public class GIS_ProjectTest {
     @Test
     public void testWeather(){
         Weather lmao = new Weather();
-        System.out.println(lmao.getInstance());
-        
-        System.out.println(lmao.getWeather());
-        
+
+       
         
         System.out.println(lmao.getTodaysTemp());
     }
+    
+    
+    
 }
