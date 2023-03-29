@@ -52,13 +52,8 @@ public class Map {
         this.listPOI = list;
     }
     
-    public static ArrayList<POI> returnPOI(ArrayList<POI> listPOI) {
-        ArrayList<POI> allPOI = new ArrayList<>();
-        for(int i = 0; i < listPOI.size(); i++) {
-            POI poi = (POI) listPOI.get(i);
-            allPOI.add(poi);
+    public ArrayList<POI> getPOIList() {
+        return listPOI;
     }
-        return allPOI;
-    } 
-    
+ 
 }
