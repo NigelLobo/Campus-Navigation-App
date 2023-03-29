@@ -66,5 +66,8 @@ public class GIS_ProjectTest {
         System.out.println(lmao.getInstance());
         
         System.out.println(lmao.getWeather());
+        
+        
+        System.out.println(lmao.getTodaysTemp());
     }
 }
