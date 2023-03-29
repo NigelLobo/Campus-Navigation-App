@@ -29,8 +29,7 @@ import org.json.simple.parser.ParseException;
  * @author Daniel Hoang
  */
 public class Weather {
-    
-    
+
     HttpClient client = HttpClient.newHttpClient();
     int londonLat;
     int londonLng;
@@ -38,48 +37,43 @@ public class Weather {
     String url = "https://api.open-meteo.com/v1/forecast?latitude=42.98&longitude=-81.23&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=America%2FNew_York";
     HttpResponse<String> response;
     String responsebody;
+
     public Weather() {
 
     }
 
-    public String getInstance(){
-                HttpRequest request = HttpRequest.newBuilder()
+//    public JSONObject getWeather() {
+//        JSONParser parser = new JSONParser();
+//        try {
+//            weatherAPIJSON = (JSONObject) parser.parse(responsebody);
+//            return weatherAPIJSON;
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
+
+    public double getTodaysTemp() {
+        HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")
                 .build();
-                try {
+        try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() != 200) {
                 throw new RuntimeException("Failed : HTTP error code : " + response.statusCode());
             }
             responsebody = response.body();
-            return responsebody;
+            
+            JSONParser parser = new JSONParser();
+            weatherAPIJSON = (JSONObject) parser.parse(responsebody);
+            
+            
+            JSONObject current = (JSONObject) weatherAPIJSON.get("current_weather");
+            double current_temp = (double) current.get("temperature");
+            return current_temp;
         } catch (Exception e) {
-              return "Pull Request Succeeded";
-
-        }    
-    }
-    
-    public JSONObject getWeather(){
-        JSONParser parser = new JSONParser();
-        try{
-        weatherAPIJSON = (JSONObject) parser.parse(responsebody); 
-        return weatherAPIJSON;
-        } 
-        catch (Exception e){
-            System.out.println("Unable to access internet");
-            return null;
-        }
-    }
-    
-    public double getTodaysTemp(){
-        
-        try{
-        JSONObject current = (JSONObject) weatherAPIJSON.get("current_weather");
-        double current_temp = (double) current.get("temperature");
-        return current_temp;
-        } catch (Exception e){
-            return Integer.MAX_VALUE;
+            System.out.println("Fetch Request Failed");
+            return Double.MAX_VALUE;    
         }
     }
 }
