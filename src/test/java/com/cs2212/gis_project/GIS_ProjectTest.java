@@ -59,4 +59,12 @@ public class GIS_ProjectTest {
         String result = instance.sayHelloTo();
         assertEquals(expResult, result);
     }    
+    
+    @Test
+    public void testWeather(){
+        Weather lmao = new Weather();
+        System.out.println(lmao.getInstance());
+        
+        System.out.println(lmao.getWeather());
+    }
 }
