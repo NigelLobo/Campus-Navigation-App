@@ -13,5 +13,6 @@ public enum Category {
     RESTAURANT,
     LAB,
     WASHROOM,
-    ELEVATOR;
+    ELEVATOR,
+    CUSTOM;
 }
