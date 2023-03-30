@@ -13,6 +13,7 @@ public class POI {
         this.name = name;
         this.id = id;
         this.category = category;
+        this.position = new int[]{x,y};
     }
     
     public String getName() {
