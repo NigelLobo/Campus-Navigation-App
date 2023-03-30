@@ -8,6 +8,14 @@ import java.awt.*;
 import java.util.*;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.ListSelectionModel;
+import org.json.simple.JSONObject;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 
 /**
  * This class has functions critical to the application and handles all GUI
@@ -20,14 +28,29 @@ public class Application extends javax.swing.JFrame {
     private String activeMap;
     private User activeUser;    
     private boolean unsavedChanges = false;
+    private String HELP_TEXT = "Abbreviations \n" +
+        "NS - natural science\n" +
+        "AH - alumni hall\n" +
+        "MC - middlesex college\n" +
+        "\n" +
+        "Getting Started \n" +
+        "- click on drop down menu on buildings to check the different floors\n" +
+        "- toggle layers to make certain POIs visible\n" +
+        "- create any POI that may interest you\n" +
+        "\n" +
+        "About us:\n" +
+        "We are a team consisting of 5 student developers who created this map application in hopes of making navigating western buildings easier";
 //    private String[] mapFiles = { "maps/mc0.png", "maps/mc1.png", "maps/mc2.png", "maps/mc3.png", "maps/mc4.png"};
     //private Map activeMapObj;
     //private Map map = new Map("MIDDLESEX");
-    private POI[] poiList;
+    private POI[] currPoiList;
     private int[] favouriteIDs;
     private POI[] userCustomPOIList;
     
-    private HashMap<Category, Boolean> activeLayers = new HashMap<>();
+    private HashMap<String, int[]> poiNameToPos = new HashMap<>(); //key: poi name, value: (x,y) coords as array
+    private HashMap<javax.swing.JLabel, POI> poiLabels = new HashMap<>(); //key: poi jlabel reference, value: POI obj reference
+    private HashMap<Category, Boolean> activeLayers = new HashMap<>(); //key: Category enum type, value: true or false
+    private HashMap<String, Map> maps = new HashMap<>(); //key: map name, value: map object
     private GIS_System gis_system = GIS_System.getInstance();
 
     /**
@@ -35,12 +58,20 @@ public class Application extends javax.swing.JFrame {
      */
     public Application() {
         initComponents();
+        Weather weather = new Weather();
+        
+        Double temp = weather.getTodaysTemp();
+//                
+        if (temp != Double.MAX_VALUE) {
+            weatherLabel.setText(Double.toString(Math.round(temp)) + " °C");
+        }
+        
         buildingSelectPanel.setVisible(false);
         buildingPanel.setVisible(false);
         layerPanel.setVisible(false);
         customPanel.setVisible(false);
         mapImageScrollPane.setVisible(false);
-        //activeMap = new Map();
+        //activeMap = new Map(); dont do it like this access it from the hashmap
         loginFailLabel.setVisible(false);
         blackMenuPanel.setVisible(false);
         //set all layer types to active
@@ -49,6 +80,7 @@ public class Application extends javax.swing.JFrame {
         this.activeLayers.put(Category.LAB, true);
         this.activeLayers.put(Category.WASHROOM, true);
         this.activeLayers.put(Category.ELEVATOR, true);
+        this.activeLayers.put(Category.CUSTOM, true);
     }
 
     /**
@@ -60,11 +92,19 @@ public class Application extends javax.swing.JFrame {
         mapPanel.setVisible(true);
         mapImageScrollPane.setVisible(true);
         blackMenuPanel.setVisible(true);
+        guiPOIList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        favList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
-        //set map image for chosen building. Default to ground floor for each
+        String defaultLevel = "";
+        if (chosenBuilding.equals("MIDDLESEX COLLEGE")) defaultLevel = "LEVEL_2.png";
+        else if (chosenBuilding.equals("ALUMNI HALL")) defaultLevel = "LEVEL_2.png";
+        else defaultLevel = "LEVEL_1.png";
         
-        //read poi's into arrays
+        //set map image for chosen building. Default to ground floor for each 
+        String path = "/maps/" + chosenBuilding.toUpperCase() + "_" + defaultLevel;
+        path = path.replaceAll(" ", "_");
         
+        mapImageLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource(path)));
         
         //display the appropriate pois... all layers selected by default
         classroomCheckbox.setSelected(true);
@@ -73,10 +113,7 @@ public class Application extends javax.swing.JFrame {
         restaurantCheckbox.setSelected(true);
         elevatorCheckbox.setSelected(true);
         
-//        for (POI p : POI[] poiList) {
-//            //get p's (x,y)
-//            //create a jlabel at that area with no text and the icon for p's layer type.
-//        }
+        loadPOIs(path);
         
         
     }
@@ -93,7 +130,40 @@ public class Application extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "You have unsaved changes.", "Unsaved Changes", JOptionPane.WARNING_MESSAGE);
         }
     }
-
+    
+    public void loadPOIs(String buildingFloorFilePath) {
+//          Map currMap = maps.get(buildingFloorFilePath);
+//          ArrayList<POI> poiList = currMap.getPOIList();
+//          String[] names = new String[poiList.size()];
+//          for (int i = 0; i < poiList.size(); i++) {
+//              names[i] = poiList.get(i).getName();
+//          }
+        guiPOIList.setModel(new javax.swing.AbstractListModel<String>() {
+//            String[] strings = names; //SHOULD BE THIS
+            String[] strings = { "some poi 1", "some poi 2", "some poi 3", "some poi 4", "some poi 5" }; 
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+//        POI[] poiList= {};// = map.getPOIList()
+//        for (POI p : poiList) {
+//            int[] pos = p.getPosition();
+//            javax.swing.JLabel somePOILabel = new javax.swing.JLabel();
+//            somePOILabel.setBounds(pos[0], pos[1],75,75);//CHANGE THE SCALE
+//            somePOILabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/poi.png")));
+//            mapImageLabel.add(somePOILabel,new Integer(10));
+//            poiLabels.put(somePOILabel, p);  
+//        }
+        javax.swing.JLabel somePOILabel = new javax.swing.JLabel();
+            somePOILabel.setBounds(100,100,75,75);//CHANGE THE SCALE
+            somePOILabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/poi.png")));
+            mapImageLabel.add(somePOILabel,new Integer(10));    
+        for (Component c : mapImageLabel.getComponents()) {
+            System.out.println((c == somePOILabel));//same reference !
+            
+        }
+//        repaint() 
+    }
+    
     /**
      * Finds the desired POI object from the current map.
      *
@@ -115,6 +185,12 @@ public class Application extends javax.swing.JFrame {
         System.out.println(filepath);
         mapImageLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource(filepath)));
         
+        //delete all current POIs, and display the new POIs for the current map also taking into account layer toggles...
+        for (Component c : mapImageLabel.getComponents()) {
+            mapImageLabel.remove(c);
+        }
+        
+//        loadPOIs(filepath);
     }
 
     /**
@@ -138,7 +214,12 @@ public class Application extends javax.swing.JFrame {
         System.out.println(type + " layer set to " + Boolean.toString(active));
         
         //repaint the map to only include active layers
-        
+        //for each poi image, sets its visibility according to the activeLayers hashmap
+        for (Component c : mapImageLabel.getComponents()) {
+            //get the current components category by accessing the <JLabel, POI> hashmap
+            Category cType = poiLabels.get(c).getType();
+            c.setVisible(this.activeLayers.get(cType));
+        }
     }
 
     /**
@@ -170,14 +251,18 @@ public class Application extends javax.swing.JFrame {
         ncbButton = new javax.swing.JButton();
         westernLogo2 = new javax.swing.JLabel();
         mapPanel = new javax.swing.JPanel();
-        mapImageScrollPane = new javax.swing.JScrollPane();
-        mapImageLabel = new javax.swing.JLabel();
         blackMenuPanel = new javax.swing.JPanel();
         helpButton = new javax.swing.JButton();
         buildingMenuButton = new javax.swing.JButton();
         layersMenuButton = new javax.swing.JButton();
         customMenuButton = new javax.swing.JButton();
-        jLabel5 = new javax.swing.JLabel();
+        weatherLabel = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        guiPOIList = new javax.swing.JList<>();
+        jLabel1 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        favList = new javax.swing.JList<>();
+        jLabel2 = new javax.swing.JLabel();
         buildingPanel = new javax.swing.JPanel();
         buildingChangeLabel = new javax.swing.JLabel();
         closeBuilding = new javax.swing.JLabel();
@@ -197,6 +282,9 @@ public class Application extends javax.swing.JFrame {
         createPOIButton = new javax.swing.JButton();
         editPOIButton = new javax.swing.JButton();
         deletePOIButton = new javax.swing.JButton();
+        jLayeredPane1 = new javax.swing.JLayeredPane();
+        mapImageScrollPane = new javax.swing.JScrollPane();
+        mapImageLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -255,7 +343,7 @@ public class Application extends javax.swing.JFrame {
                         .addComponent(westernLogoLabel)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, loginPanelLayout.createSequentialGroup()
-                .addContainerGap(344, Short.MAX_VALUE)
+                .addContainerGap(348, Short.MAX_VALUE)
                 .addComponent(group42Label)
                 .addGap(204, 204, 204))
         );
@@ -326,26 +414,27 @@ public class Application extends javax.swing.JFrame {
         buildingSelectPanelLayout.setHorizontalGroup(
             buildingSelectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(buildingSelectPanelLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(buildingSelectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(selectBuildingLabel)
-                    .addComponent(mcButton, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(71, 71, 71)
                 .addGroup(buildingSelectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(buildingSelectPanelLayout.createSequentialGroup()
-                        .addComponent(ahButton, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(52, 52, 52)
-                        .addComponent(ncbButton, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(westernLogo2))
+                        .addGap(20, 20, 20)
+                        .addGroup(buildingSelectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(selectBuildingLabel)
+                            .addComponent(mcButton, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(71, 71, 71)
+                        .addGroup(buildingSelectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(buildingSelectPanelLayout.createSequentialGroup()
+                                .addComponent(ahButton, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(52, 52, 52)
+                                .addComponent(ncbButton, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(westernLogo2)))
+                    .addGroup(buildingSelectPanelLayout.createSequentialGroup()
+                        .addGap(156, 156, 156)
+                        .addComponent(mcLabel)
+                        .addGap(287, 287, 287)
+                        .addComponent(ahLabel)
+                        .addGap(258, 258, 258)
+                        .addComponent(ncbLabel)))
                 .addContainerGap(167, Short.MAX_VALUE))
-            .addGroup(buildingSelectPanelLayout.createSequentialGroup()
-                .addGap(156, 156, 156)
-                .addComponent(mcLabel)
-                .addGap(295, 295, 295)
-                .addComponent(ahLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(ncbLabel)
-                .addGap(204, 204, 204))
         );
         buildingSelectPanelLayout.setVerticalGroup(
             buildingSelectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -356,7 +445,7 @@ public class Application extends javax.swing.JFrame {
                         .addComponent(selectBuildingLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, buildingSelectPanelLayout.createSequentialGroup()
-                        .addContainerGap(186, Short.MAX_VALUE)
+                        .addContainerGap(213, Short.MAX_VALUE)
                         .addComponent(westernLogo2)
                         .addGap(58, 58, 58)))
                 .addGroup(buildingSelectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -370,9 +459,6 @@ public class Application extends javax.swing.JFrame {
                     .addComponent(mcLabel))
                 .addGap(259, 259, 259))
         );
-
-        mapImageLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/maps/MIDDLESEX_COLLEGE_LEVEL_2.png"))); // NOI18N
-        mapImageScrollPane.setViewportView(mapImageLabel);
 
         blackMenuPanel.setBackground(new java.awt.Color(0, 0, 0));
 
@@ -417,9 +503,41 @@ public class Application extends javax.swing.JFrame {
             }
         });
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setText("4 °C ");
+        weatherLabel.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        weatherLabel.setForeground(new java.awt.Color(255, 255, 255));
+        weatherLabel.setText("N/A");
+
+        guiPOIList.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        guiPOIList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                guiPOIListValueChanged(evt);
+            }
+        });
+        jScrollPane1.setViewportView(guiPOIList);
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Current POI's");
+
+        favList.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        favList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                favListValueChanged(evt);
+            }
+        });
+        jScrollPane3.setViewportView(favList);
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("Favourites");
 
         javax.swing.GroupLayout blackMenuPanelLayout = new javax.swing.GroupLayout(blackMenuPanel);
         blackMenuPanel.setLayout(blackMenuPanelLayout);
@@ -428,16 +546,30 @@ public class Application extends javax.swing.JFrame {
             .addGroup(blackMenuPanelLayout.createSequentialGroup()
                 .addGroup(blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(blackMenuPanelLayout.createSequentialGroup()
+                        .addGroup(blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(blackMenuPanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(helpButton)
+                                    .addComponent(buildingMenuButton)
+                                    .addComponent(layersMenuButton)
+                                    .addComponent(customMenuButton)))
+                            .addGroup(blackMenuPanelLayout.createSequentialGroup()
+                                .addGap(29, 29, 29)
+                                .addComponent(weatherLabel))
+                            .addGroup(blackMenuPanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel1))
+                            .addGroup(blackMenuPanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel2)))
+                        .addGap(0, 31, Short.MAX_VALUE))
+                    .addGroup(blackMenuPanelLayout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(helpButton)
-                            .addComponent(buildingMenuButton)
-                            .addComponent(layersMenuButton)
-                            .addComponent(customMenuButton)))
-                    .addGroup(blackMenuPanelLayout.createSequentialGroup()
-                        .addGap(29, 29, 29)
-                        .addComponent(jLabel5)))
-                .addContainerGap(47, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1)
+                            .addComponent(jScrollPane3))))
+                .addContainerGap())
         );
         blackMenuPanelLayout.setVerticalGroup(
             blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -448,10 +580,18 @@ public class Application extends javax.swing.JFrame {
                 .addComponent(layersMenuButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(customMenuButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(27, 27, 27)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 77, Short.MAX_VALUE)
                 .addComponent(helpButton)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel5)
+                .addComponent(weatherLabel)
                 .addGap(35, 35, 35))
         );
 
@@ -459,6 +599,11 @@ public class Application extends javax.swing.JFrame {
 
         buildingChangeLabel.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         buildingChangeLabel.setText("Buildings");
+        buildingChangeLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                buildingChangeLabelMouseClicked(evt);
+            }
+        });
 
         closeBuilding.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/icons8-close-window-16.png"))); // NOI18N
         closeBuilding.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -693,6 +838,28 @@ public class Application extends javax.swing.JFrame {
                 .addGap(0, 8, Short.MAX_VALUE))
         );
 
+        mapImageLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/maps/MIDDLESEX_COLLEGE_LEVEL_2.png"))); // NOI18N
+        mapImageScrollPane.setViewportView(mapImageLabel);
+
+        jLayeredPane1.setLayer(mapImageScrollPane, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        javax.swing.GroupLayout jLayeredPane1Layout = new javax.swing.GroupLayout(jLayeredPane1);
+        jLayeredPane1.setLayout(jLayeredPane1Layout);
+        jLayeredPane1Layout.setHorizontalGroup(
+            jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jLayeredPane1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(mapImageScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 700, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jLayeredPane1Layout.setVerticalGroup(
+            jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jLayeredPane1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(mapImageScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
         javax.swing.GroupLayout mapPanelLayout = new javax.swing.GroupLayout(mapPanel);
         mapPanel.setLayout(mapPanelLayout);
         mapPanelLayout.setHorizontalGroup(
@@ -705,7 +872,8 @@ public class Application extends javax.swing.JFrame {
                     .addComponent(layerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(customPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mapImageScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE))
+                .addComponent(jLayeredPane1)
+                .addContainerGap())
         );
         mapPanelLayout.setVerticalGroup(
             mapPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -716,8 +884,8 @@ public class Application extends javax.swing.JFrame {
                 .addComponent(layerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(customPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 131, Short.MAX_VALUE))
-            .addComponent(mapImageScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 868, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jLayeredPane1)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -868,7 +1036,7 @@ public class Application extends javax.swing.JFrame {
 
     private void helpButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_helpButtonMouseClicked
         // TODO add your handling code here:
-                JOptionPane.showMessageDialog(this, "Current User: user.getName(). more info...", "Help", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Current User: user.getName(). " + this.HELP_TEXT, "Help", JOptionPane.INFORMATION_MESSAGE);
 
     }//GEN-LAST:event_helpButtonMouseClicked
 
@@ -908,6 +1076,35 @@ public class Application extends javax.swing.JFrame {
     private void deletePOIButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deletePOIButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_deletePOIButtonActionPerformed
+
+    private void buildingChangeLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buildingChangeLabelMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_buildingChangeLabelMouseClicked
+
+    private void guiPOIListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_guiPOIListValueChanged
+        // TODO add your handling code here:
+        if (!guiPOIList.getValueIsAdjusting()) {
+            System.out.println(guiPOIList.getSelectedValue() + " was selected.");
+            //center map to selected poi
+            String name = guiPOIList.getSelectedValue();
+            int[] pos = poiNameToPos.get(name);
+            //center scroll pane to currently selected poi
+            mapImageScrollPane.getViewport().setViewPosition(new Point(pos[0], pos[1] ));
+        }
+        
+    }//GEN-LAST:event_guiPOIListValueChanged
+
+    private void favListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_favListValueChanged
+        // TODO add your handling code here:
+        if (!favList.getValueIsAdjusting()) {
+            System.out.println(favList.getSelectedValue() + " was selected from the favourites menu.");
+            //center map to selected poi
+            String name = favList.getSelectedValue();
+            int[] pos = poiNameToPos.get(name);
+            //center scroll pane to currently selected poi
+            mapImageScrollPane.getViewport().setViewPosition(new Point(pos[0], pos[1] ));
+        }
+    }//GEN-LAST:event_favListValueChanged
 
     /**
      * @param args the command line arguments
@@ -965,10 +1162,16 @@ public class Application extends javax.swing.JFrame {
     private javax.swing.JButton deletePOIButton;
     private javax.swing.JButton editPOIButton;
     private javax.swing.JCheckBox elevatorCheckbox;
+    private javax.swing.JList<String> favList;
     private javax.swing.JLabel group42Label;
+    private javax.swing.JList<String> guiPOIList;
     private javax.swing.JButton helpButton;
-    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLayeredPane jLayeredPane1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JCheckBox labCheckbox;
     private javax.swing.JPanel layerPanel;
     private javax.swing.JLabel layerSelectLabel;
@@ -991,6 +1194,7 @@ public class Application extends javax.swing.JFrame {
     private javax.swing.JLabel usernameLabel;
     private javax.swing.JTextField usernameTextField;
     private javax.swing.JCheckBox washroomCheckbox;
+    private javax.swing.JLabel weatherLabel;
     private javax.swing.JLabel westernLogo2;
     private javax.swing.JLabel westernLogoLabel;
     // End of variables declaration//GEN-END:variables
