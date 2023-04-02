@@ -67,6 +67,7 @@
                                   <Component id="usernameTextField" max="32767" attributes="0"/>
                                   <Component id="passwordField" alignment="0" min="-2" pref="146" max="-2" attributes="0"/>
                               </Group>
+                              <Component id="guestModeButton" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="-2" pref="116" max="-2" attributes="0"/>
                           <Component id="westernLogoLabel" min="-2" max="-2" attributes="0"/>
@@ -99,12 +100,14 @@
                           <Component id="passwordField" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="loginButton" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="62" max="-2" attributes="0"/>
                           <Component id="loginFailLabel" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="westernLogoLabel" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="247" max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="97" max="-2" attributes="0"/>
+                  <Component id="guestModeButton" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace pref="125" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -132,7 +135,7 @@
         </Component>
         <Component class="javax.swing.JButton" name="loginButton">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Login"/>
+            <Property name="text" type="java.lang.String" value="Admin Login"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loginButtonActionPerformed"/>
@@ -168,6 +171,14 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Group 42 - CS2212 GIS Project"/>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="guestModeButton">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Guest Mode"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="guestModeButtonActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -339,7 +350,7 @@
                   <Component id="buildingPanel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="layerPanel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="43" max="-2" attributes="0"/>
                   <Component id="customPanel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
               </Group>
@@ -568,7 +579,7 @@
         <Container class="javax.swing.JPanel" name="buildingPanel">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="99" green="99" red="ff" type="rgb"/>
+              <Color blue="cc" green="cc" red="cc" type="rgb"/>
             </Property>
           </Properties>
 
@@ -659,7 +670,7 @@
         <Container class="javax.swing.JPanel" name="layerPanel">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="99" green="99" red="ff" type="rgb"/>
+              <Color blue="cc" green="cc" red="cc" type="rgb"/>
             </Property>
           </Properties>
 
@@ -681,6 +692,7 @@
                                   <Component id="labCheckbox" alignment="0" max="32767" attributes="0"/>
                                   <Component id="restaurantCheckbox" alignment="0" max="32767" attributes="0"/>
                                   <Component id="classroomCheckbox" max="32767" attributes="0"/>
+                                  <Component id="customCheckbox" alignment="0" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -708,6 +720,8 @@
                       <Component id="washroomCheckbox" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="elevatorCheckbox" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="customCheckbox" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -772,12 +786,20 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="elevatorCheckboxActionPerformed"/>
               </Events>
             </Component>
+            <Component class="javax.swing.JCheckBox" name="customCheckbox">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Custom"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="customCheckboxActionPerformed"/>
+              </Events>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="customPanel">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="99" green="99" red="ff" type="rgb"/>
+              <Color blue="cc" green="cc" red="cc" type="rgb"/>
             </Property>
           </Properties>
 
@@ -894,6 +916,9 @@
                       <Image iconType="3" name="/maps/MIDDLESEX_COLLEGE_LEVEL_2.png"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="mapImageLabelMouseClicked"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>

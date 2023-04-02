@@ -9,12 +9,10 @@ import java.util.*;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.ListSelectionModel;
-import org.json.simple.JSONObject;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import java.awt.event.*;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JTextField;
 
 
 /**
@@ -24,7 +22,9 @@ import org.json.simple.parser.ParseException;
  * @author nlobo9
  */
 public class Application extends javax.swing.JFrame {
-
+    private javax.swing.JLabel tempJLabel;
+    private Point mousePos;
+    private boolean creationMode, devMode;
     private String activeMap;
     private User activeUser;    
     private boolean unsavedChanges = false;
@@ -44,8 +44,6 @@ public class Application extends javax.swing.JFrame {
     //private Map activeMapObj;
     //private Map map = new Map("MIDDLESEX");
     private POI[] currPoiList;
-    private int[] favouriteIDs;
-    private POI[] userCustomPOIList;
     
     private HashMap<String, int[]> poiNameToPos = new HashMap<>(); //key: poi name, value: (x,y) coords as array
     private HashMap<javax.swing.JLabel, POI> poiLabels = new HashMap<>(); //key: poi jlabel reference, value: POI obj reference
@@ -112,6 +110,7 @@ public class Application extends javax.swing.JFrame {
         labCheckbox.setSelected(true);
         restaurantCheckbox.setSelected(true);
         elevatorCheckbox.setSelected(true);
+        customCheckbox.setSelected(true);
         
         loadPOIs(path);
         
@@ -131,6 +130,18 @@ public class Application extends javax.swing.JFrame {
         }
     }
     
+    public void loadFavourites() {
+        //iterate through current displayed poi list and if favourite, add to favourite list
+        String[] listOfFavourites = new String[2];//= [currActiveList.length]
+        
+        favList.setModel(new javax.swing.AbstractListModel<String>() {
+//            String[] strings = names; //SHOULD BE THIS
+            String[] strings = listOfFavourites; 
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+    }
+    
     public void loadPOIs(String buildingFloorFilePath) {
 //          Map currMap = maps.get(buildingFloorFilePath);
 //          ArrayList<POI> poiList = currMap.getPOIList();
@@ -144,6 +155,7 @@ public class Application extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        Component frameSelf = this;
 //        POI[] poiList= {};// = map.getPOIList()
 //        for (POI p : poiList) {
 //            int[] pos = p.getPosition();
@@ -151,16 +163,54 @@ public class Application extends javax.swing.JFrame {
 //            somePOILabel.setBounds(pos[0], pos[1],75,75);//CHANGE THE SCALE
 //            somePOILabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/poi.png")));
 //            mapImageLabel.add(somePOILabel,new Integer(10));
-//            poiLabels.put(somePOILabel, p);  
+//            poiLabels.put(somePOILabel, p);
+    //        somePOILabel.addMouseListener(new MouseAdapter() {
+    //                        @Override
+    //                        public void mouseClicked(MouseEvent e) {
+//                                String pLayer = "";
+                    ////          switch(p.getType()) {
+                    //            case Category.CLASSROOM: pLayer = "Classroom";
+                    //            case Category.WASHROOM: pLayer = "Washroom";
+                    //            case Category.ELEVATOR: pLayer = "Elevator";
+                    //            case Category.CUSTOM: pLayer = "Custom";
+                    //            case Category.LAB: pLayer = "Lab";
+                    //            case Category.RESTAURANT: pLayer = "Restaurant";
+                    //            default: break;
+        
 //        }
-        javax.swing.JLabel somePOILabel = new javax.swing.JLabel();
-            somePOILabel.setBounds(100,100,75,75);//CHANGE THE SCALE
-            somePOILabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/poi.png")));
-            mapImageLabel.add(somePOILabel,new Integer(10));    
-        for (Component c : mapImageLabel.getComponents()) {
-            System.out.println((c == somePOILabel));//same reference !
+//                               // builtin menu for regular user
+//                               if (!pLayer.equals("Custom")) {
+    //                               JOptionPane.showMessageDialog(frameSelf, "Layer: " + pLayer, p.getName(), JOptionPane.INFORMATION_MESSAGE);
+    //                           } else if (not admin) { //custom menu for builtins, regular user
+//                                  
+//                               } else { } //is admin??
+//                            }
+    //                    });
+//        }
+//***************************************************************TO BE REMOVED
+//        javax.swing.JLabel somePOILabel = new javax.swing.JLabel();
+//            somePOILabel.setBounds(100,100,75,75);//CHANGE THE SCALE
+//            somePOILabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/poi.png")));
+//            mapImageLabel.add(somePOILabel,new Integer(10));
+//            somePOILabel.addMouseListener(new MouseAdapter() {
+//                @Override
+//                public void mouseClicked(MouseEvent e) {
+//                   JOptionPane.showMessageDialog(frameSelf, "poi info", "POI Information", JOptionPane.INFORMATION_MESSAGE);
+//                }
+//            });
+//*************************************************************************************
+//            
+//            jLabel.addMouseListener(new MouseAdapter() {
+//        @Override
+//        public void mouseClicked(MouseEvent e) {
+//            jLabel.setIcon(newIcon);
+//        }
+//    });
             
-        }
+//        for (Component c : mapImageLabel.getComponents()) {
+//            System.out.println((c == somePOILabel));//same reference !
+//            
+//        }
 //        repaint() 
     }
     
@@ -188,6 +238,8 @@ public class Application extends javax.swing.JFrame {
         //delete all current POIs, and display the new POIs for the current map also taking into account layer toggles...
         for (Component c : mapImageLabel.getComponents()) {
             mapImageLabel.remove(c);
+            //clear hashmap
+            
         }
         
 //        loadPOIs(filepath);
@@ -241,6 +293,7 @@ public class Application extends javax.swing.JFrame {
         loginFailLabel = new javax.swing.JLabel();
         westernLogoLabel = new javax.swing.JLabel();
         group42Label = new javax.swing.JLabel();
+        guestModeButton = new javax.swing.JButton();
         buildingSelectPanel = new javax.swing.JPanel();
         selectBuildingLabel = new javax.swing.JLabel();
         mcButton = new javax.swing.JButton();
@@ -276,6 +329,7 @@ public class Application extends javax.swing.JFrame {
         labCheckbox = new javax.swing.JCheckBox();
         washroomCheckbox = new javax.swing.JCheckBox();
         elevatorCheckbox = new javax.swing.JCheckBox();
+        customCheckbox = new javax.swing.JCheckBox();
         customPanel = new javax.swing.JPanel();
         customSelectLabel = new javax.swing.JLabel();
         closeCustom = new javax.swing.JLabel();
@@ -304,7 +358,7 @@ public class Application extends javax.swing.JFrame {
 
         passwordLabel.setText("Password");
 
-        loginButton.setText("Login");
+        loginButton.setText("Admin Login");
         loginButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loginButtonActionPerformed(evt);
@@ -322,6 +376,13 @@ public class Application extends javax.swing.JFrame {
         group42Label.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         group42Label.setText("Group 42 - CS2212 GIS Project");
 
+        guestModeButton.setText("Guest Mode");
+        guestModeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guestModeButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout loginPanelLayout = new javax.swing.GroupLayout(loginPanel);
         loginPanel.setLayout(loginPanelLayout);
         loginPanelLayout.setHorizontalGroup(
@@ -338,7 +399,8 @@ public class Application extends javax.swing.JFrame {
                             .addGroup(loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(usernameLabel)
                                 .addComponent(usernameTextField)
-                                .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(guestModeButton))
                         .addGap(116, 116, 116)
                         .addComponent(westernLogoLabel)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -365,10 +427,12 @@ public class Application extends javax.swing.JFrame {
                         .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(loginButton)
-                        .addGap(24, 24, 24)
+                        .addGap(62, 62, 62)
                         .addComponent(loginFailLabel))
                     .addComponent(westernLogoLabel))
-                .addContainerGap(247, Short.MAX_VALUE))
+                .addGap(97, 97, 97)
+                .addComponent(guestModeButton)
+                .addContainerGap(125, Short.MAX_VALUE))
         );
 
         selectBuildingLabel.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
@@ -595,7 +659,7 @@ public class Application extends javax.swing.JFrame {
                 .addGap(35, 35, 35))
         );
 
-        buildingPanel.setBackground(new java.awt.Color(255, 153, 153));
+        buildingPanel.setBackground(new java.awt.Color(204, 204, 204));
 
         buildingChangeLabel.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         buildingChangeLabel.setText("Buildings");
@@ -687,7 +751,7 @@ public class Application extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        layerPanel.setBackground(new java.awt.Color(255, 153, 153));
+        layerPanel.setBackground(new java.awt.Color(204, 204, 204));
 
         layerSelectLabel.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         layerSelectLabel.setText("Layers");
@@ -734,6 +798,13 @@ public class Application extends javax.swing.JFrame {
             }
         });
 
+        customCheckbox.setText("Custom");
+        customCheckbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                customCheckboxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layerPanelLayout = new javax.swing.GroupLayout(layerPanel);
         layerPanel.setLayout(layerPanelLayout);
         layerPanelLayout.setHorizontalGroup(
@@ -751,7 +822,8 @@ public class Application extends javax.swing.JFrame {
                             .addComponent(washroomCheckbox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(labCheckbox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(restaurantCheckbox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(classroomCheckbox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(classroomCheckbox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(customCheckbox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap())))
         );
         layerPanelLayout.setVerticalGroup(
@@ -772,10 +844,12 @@ public class Application extends javax.swing.JFrame {
                 .addComponent(washroomCheckbox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(elevatorCheckbox)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(customCheckbox)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        customPanel.setBackground(new java.awt.Color(255, 153, 153));
+        customPanel.setBackground(new java.awt.Color(204, 204, 204));
 
         customSelectLabel.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         customSelectLabel.setText("Custom");
@@ -839,6 +913,11 @@ public class Application extends javax.swing.JFrame {
         );
 
         mapImageLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/maps/MIDDLESEX_COLLEGE_LEVEL_2.png"))); // NOI18N
+        mapImageLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mapImageLabelMouseClicked(evt);
+            }
+        });
         mapImageScrollPane.setViewportView(mapImageLabel);
 
         jLayeredPane1.setLayer(mapImageScrollPane, javax.swing.JLayeredPane.DEFAULT_LAYER);
@@ -882,7 +961,7 @@ public class Application extends javax.swing.JFrame {
                 .addComponent(buildingPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(layerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(43, 43, 43)
                 .addComponent(customPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
             .addComponent(jLayeredPane1)
@@ -926,7 +1005,7 @@ public class Application extends javax.swing.JFrame {
         // login with user's credentials, else handle login failure
 //        if (gis_system.login(usernameTextField.getText(), String.valueOf(passwordField.getPassword()))) {
           if (true) {
-            System.out.println("Login successful.");
+            System.out.println("Admin/Dev Mode Login successful.");
             //login success. Remove login page components and move to application UI
             for (Component c : loginPanel.getComponents()) {
                 loginPanel.remove(c);
@@ -934,9 +1013,9 @@ public class Application extends javax.swing.JFrame {
             loginPanel.repaint();
             loginPanel.setVisible(false);
             buildingSelectPanel.setVisible(true);
-            
+            devMode = true;
         } else {
-            System.out.println("Login Failed.");
+            System.out.println("Admin Login Failed.");
             loginFailLabel.setVisible(true);
         }
 
@@ -1066,15 +1145,18 @@ public class Application extends javax.swing.JFrame {
     }//GEN-LAST:event_elevatorCheckboxActionPerformed
 
     private void createPOIButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createPOIButtonActionPerformed
-        // TODO add your handling code here:
+        this.creationMode = true;
+        System.out.println(this.creationMode + " creation mode");
+//        this.editMode = false;
+//        this.deleteMode = false;
     }//GEN-LAST:event_createPOIButtonActionPerformed
 
     private void editPOIButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editPOIButtonActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_editPOIButtonActionPerformed
 
     private void deletePOIButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deletePOIButtonActionPerformed
-        // TODO add your handling code here:
+         
     }//GEN-LAST:event_deletePOIButtonActionPerformed
 
     private void buildingChangeLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buildingChangeLabelMouseClicked
@@ -1105,6 +1187,131 @@ public class Application extends javax.swing.JFrame {
             mapImageScrollPane.getViewport().setViewPosition(new Point(pos[0], pos[1] ));
         }
     }//GEN-LAST:event_favListValueChanged
+
+    private void guestModeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guestModeButtonActionPerformed
+        loginFailLabel.setVisible(false);
+        System.out.println("Guest Mode successful.");
+        for (Component c : loginPanel.getComponents()) {
+            loginPanel.remove(c);
+        }
+        loginPanel.repaint();
+        loginPanel.setVisible(false);
+        buildingSelectPanel.setVisible(true);
+
+        
+    }//GEN-LAST:event_guestModeButtonActionPerformed
+
+    private void customCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customCheckboxActionPerformed
+        toggleLayer(Category.CUSTOM, customCheckbox.isSelected());
+    }//GEN-LAST:event_customCheckboxActionPerformed
+
+    private void mapImageLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mapImageLabelMouseClicked
+        // TODO add your handling code here:
+        if (!this.creationMode) return;
+        this.mousePos = mapImageLabel.getMousePosition();
+        System.out.println(evt.getX());
+                System.out.println(evt.getY());
+        javax.swing.JLabel somePOILabel = null;
+        Component frameSelf = this;
+//        if (this.creationMode) {
+            this.creationMode = false;
+            //create a new POI and show popup
+            somePOILabel = new javax.swing.JLabel();
+            somePOILabel.setBounds(evt.getX() - 50,evt.getY() - 50,75,75);//CHANGE THE SCALE
+            somePOILabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/poi.png")));
+            mapImageLabel.add(somePOILabel,new Integer(10));
+            tempJLabel = somePOILabel;
+            somePOILabel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                  String pLayer = "";
+                  switch(poiLabels.get(tempJLabel).getType()) {
+                    case CLASSROOM: pLayer = "Classroom"; break;
+                    case WASHROOM: pLayer = "Washroom"; break;
+                    case ELEVATOR: pLayer = "Elevator"; break;
+                    case CUSTOM: pLayer = "Custom"; break;
+                    case LAB: pLayer = "Lab"; break;
+                    case RESTAURANT: pLayer = "Restaurant"; break;
+                    default: break;
+                  }
+                  JButton addFavButton = new JButton();
+                  String favStatus;
+                  if (poiLabels.get(tempJLabel).getFavouriteStatus() == true) favStatus = "Remove Favourite";
+                  else favStatus = "Add Favourite";
+                  addFavButton.setText(favStatus);
+                  addFavButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            String favStatus;
+                            if (poiLabels.get(tempJLabel).getFavouriteStatus() == true) favStatus = "Remove Favourite";
+                            else favStatus = "Add Favourite";
+                            if (favStatus.equals("Add Favourite")) {
+                                poiLabels.get(tempJLabel).setFavouriteStatus(true);
+                                addFavButton.setText("Remove Favourite");
+                                loadFavourites();
+                            }
+                            else {
+                                poiLabels.get(tempJLabel).setFavouriteStatus(false);
+                                addFavButton.setText("Add Favourite");
+                                loadFavourites();
+                            }
+                            System.out.println("Set to " + poiLabels.get(tempJLabel).getFavouriteStatus());
+                            addFavButton.repaint();
+                        }
+                  });
+                  JOptionPane.showOptionDialog(frameSelf, new Object[] {"Name: " + poiLabels.get(tempJLabel).getName() + "\n Layer: " + pLayer + "\n", addFavButton},
+                    "POI Information", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, null, null);
+//                   JOptionPane.showMessageDialog(frameSelf, "Name: " + poiLabels.get(tempJLabel).getName() + "\n Layer: " + pLayer + "\n", "POI Information", JOptionPane.INFORMATION_MESSAGE);
+                }
+            });
+//        }
+        mapImageLabel.repaint();
+        if (devMode) {
+            //allow admin to add POIS of all Types
+            String[] types = {"Classroom", "Restaurant", "Lab", "Washroom", "Elevator"};
+            Category[] typesEnum = {Category.CLASSROOM, Category.RESTAURANT, Category.LAB, Category.WASHROOM, Category.ELEVATOR};
+            JComboBox layerDropdown = new JComboBox(types);
+            JTextField nameField = new JTextField();
+            int result = JOptionPane.showOptionDialog(this, new Object[] {"Enter POI Name:", nameField, "Enter Layer Type:", layerDropdown},
+          "Create POI in Admin Mode", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+            if (result == JOptionPane.OK_OPTION) {
+                //make a new POI
+                Category devType = typesEnum[layerDropdown.getSelectedIndex()];
+                POI devPOI = new POI(nameField.getText(), 0, devType, evt.getX(), evt.getY());
+                //map.addPOI(nameField.getText(), 0, Category.CUSTOM, evt.getX(), evt.getY())
+                //add to hashmap
+                int[] coord = {evt.getX(), evt.getY()};
+                this.poiLabels.put(somePOILabel, devPOI);
+                this.poiNameToPos.put(nameField.getText(), coord);
+                System.out.println(this.poiLabels.get(somePOILabel).getName());
+                //call system.save(all maps)
+            }
+            else if (result == JOptionPane.CANCEL_OPTION) {
+                mapImageLabel.remove(somePOILabel);
+                mapImageLabel.repaint();
+            }
+        }
+        else {
+            JTextField nameField = new JTextField();
+            int result = JOptionPane.showOptionDialog(this, new Object[] {"Enter POI Name:", nameField},
+          "Create POI", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+            if (result == JOptionPane.OK_OPTION) {
+                //make a new POI
+                POI newPOI = new POI(nameField.getText(), 0, Category.CUSTOM, evt.getX(), evt.getY());
+                //map.addPOI(nameField.getText(), 0, Category.CUSTOM, evt.getX(), evt.getY())
+                //add to hashmap
+                int[] coord = {evt.getX(), evt.getY()};
+                this.poiLabels.put(somePOILabel, newPOI);
+                this.poiNameToPos.put(nameField.getText(), coord);
+                System.out.println(this.poiLabels.get(somePOILabel).getName());
+                //call system.save(all maps)
+            }
+            else if (result == JOptionPane.CANCEL_OPTION) {
+                mapImageLabel.remove(somePOILabel);
+                mapImageLabel.repaint();
+            }
+        }
+    }//GEN-LAST:event_mapImageLabelMouseClicked
 
     /**
      * @param args the command line arguments
@@ -1156,6 +1363,7 @@ public class Application extends javax.swing.JFrame {
     private javax.swing.JLabel closeCustom;
     private javax.swing.JLabel closeLayer;
     private javax.swing.JButton createPOIButton;
+    private javax.swing.JCheckBox customCheckbox;
     private javax.swing.JButton customMenuButton;
     private javax.swing.JPanel customPanel;
     private javax.swing.JLabel customSelectLabel;
@@ -1164,6 +1372,7 @@ public class Application extends javax.swing.JFrame {
     private javax.swing.JCheckBox elevatorCheckbox;
     private javax.swing.JList<String> favList;
     private javax.swing.JLabel group42Label;
+    private javax.swing.JButton guestModeButton;
     private javax.swing.JList<String> guiPOIList;
     private javax.swing.JButton helpButton;
     private javax.swing.JLabel jLabel1;
