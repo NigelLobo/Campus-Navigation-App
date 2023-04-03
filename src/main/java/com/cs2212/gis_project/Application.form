@@ -352,7 +352,7 @@
                   <Component id="layerPanel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="43" max="-2" attributes="0"/>
                   <Component id="customPanel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="161" max="32767" attributes="0"/>
               </Group>
               <Component id="jLayeredPane1" alignment="0" max="32767" attributes="0"/>
           </Group>
@@ -373,39 +373,40 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="helpButton" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Group type="102" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="helpButton" min="-2" max="-2" attributes="0"/>
                                           <Component id="buildingMenuButton" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="layersMenuButton" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="customMenuButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
-                                      <Component id="weatherLabel" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" attributes="0">
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                                  </Group>
                               </Group>
-                              <EmptySpace min="0" pref="31" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jScrollPane1" max="32767" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="weatherLabel" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="0" pref="19" max="32767" attributes="0"/>
+                                  </Group>
                                   <Component id="jScrollPane3" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="searchField" alignment="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="searchButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -418,15 +419,21 @@
                       <Component id="layersMenuButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="customMenuButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
+                      <Component id="searchField" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="searchButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane1" min="-2" pref="221" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane3" min="-2" pref="221" max="-2" attributes="0"/>
-                      <EmptySpace pref="77" max="32767" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="helpButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="weatherLabel" min="-2" max="-2" attributes="0"/>
@@ -493,7 +500,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="N/A"/>
+                <Property name="text" type="java.lang.String" value="No Internet"/>
               </Properties>
             </Component>
             <Container class="javax.swing.JScrollPane" name="jScrollPane1">
@@ -532,7 +539,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Current POI&apos;s"/>
+                <Property name="text" type="java.lang.String" value="Search POI"/>
               </Properties>
             </Component>
             <Container class="javax.swing.JScrollPane" name="jScrollPane3">
@@ -573,6 +580,30 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Favourites"/>
               </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="jLabel3">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Segoe UI" size="14" style="1"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Current POI&apos;s"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="searchField">
+            </Component>
+            <Component class="javax.swing.JButton" name="searchButton">
+              <Properties>
+                <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Find"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="searchButtonActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -813,8 +844,6 @@
                       <Component id="closeCustom" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Component id="createPOIButton" alignment="1" max="32767" attributes="0"/>
-                  <Component id="editPOIButton" alignment="1" max="32767" attributes="0"/>
-                  <Component id="deletePOIButton" alignment="1" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -829,11 +858,7 @@
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="createPOIButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="editPOIButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="deletePOIButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="8" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="25" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -863,22 +888,6 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="createPOIButtonActionPerformed"/>
-              </Events>
-            </Component>
-            <Component class="javax.swing.JButton" name="editPOIButton">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Edit POI"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editPOIButtonActionPerformed"/>
-              </Events>
-            </Component>
-            <Component class="javax.swing.JButton" name="deletePOIButton">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Delete POI"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deletePOIButtonActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>
