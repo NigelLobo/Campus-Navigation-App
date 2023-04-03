@@ -40,8 +40,10 @@ public class GIS_System {
     public Map[] Load()
     {
         try {
-            String path = "newapp.json";
-            String contents = new String(Files.readAllBytes(Paths.get(path)));
+            JSONParser parser = new JSONParser();
+            URL obj = this.getClass().getClassLoader().getResource("data/app.json");
+            
+            String contents = new String(Files.readAllBytes(Paths.get(obj.getFile())));
             JSONObject buildings = new JSONObject(contents);
             JSONObject alumni = buildings.getJSONObject("ALUMNI");
             JSONObject middlesex = buildings.getJSONObject("MIDDLESEX");
@@ -103,6 +105,10 @@ public class GIS_System {
         catch(IOException e)
         {
             e.printStackTrace();
+            return null;
+        }
+        catch (Exception e)
+        {
             return null;
         }
     }
@@ -181,7 +187,8 @@ public class GIS_System {
         buildings.put("NORTH_CAMPUS", ncb);
         
         /* NOT THE PROPER FILE PATH */
-        try (FileWriter file = new FileWriter("app.json")) {
+        URL obj = this.getClass().getClassLoader().getResource("data/app.json");
+        try (FileWriter file = new FileWriter(obj.getFile())) {
             file.write(buildings.toString());
         }
         catch(IOException e) {

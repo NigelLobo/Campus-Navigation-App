@@ -8,11 +8,13 @@ public class POI {
     private Category category;
     private int[] position = new int [2];
     private boolean active = true;
+    private boolean isFavourite = false;
     
-    public POI(String name, int id, Category category, int x, int y) {
+    public POI(String name, Category category, int x, int y) {
         this.name = name;
         this.id = id;
         this.category = category;
+        this.position = new int[]{x,y};
     }
     
     public String getName() {
@@ -52,4 +54,11 @@ public class POI {
         this.active = isActive;
     }
      
+    public void setFavouriteStatus(boolean makeFavourite) {
+        this.isFavourite = makeFavourite;
+    }
+    
+    public boolean getFavouriteStatus() {
+        return this.isFavourite;
+    }
 }

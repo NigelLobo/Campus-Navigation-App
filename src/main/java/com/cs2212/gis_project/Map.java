@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Map {
     private String mapName;
-    public ArrayList listPOI = new ArrayList();
+    public ArrayList<POI> listPOI = new ArrayList<POI>();
     
     public Map(String name) {
         this.mapName = name;
@@ -51,4 +51,9 @@ public class Map {
     public void setListPOI(ArrayList list) {
         this.listPOI = list;
     }
+    
+    public ArrayList<POI> getPOIList() {
+        return listPOI;
+    }
+ 
 }
