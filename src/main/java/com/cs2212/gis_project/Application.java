@@ -26,12 +26,12 @@ public class Application extends javax.swing.JFrame {
     private Point mousePos;
     private boolean creationMode, devMode;
     private String activeMap;
-    private User activeUser;    
-    private boolean unsavedChanges = false;
+    private User activeUser;
+    private Map currMap;
     private String HELP_TEXT = "Abbreviations \n" +
-        "NS - natural science\n" +
-        "AH - alumni hall\n" +
-        "MC - middlesex college\n" +
+        "NS - Natural Science\n" +
+        "AH - Alumni Hall\n" +
+        "MC - Middlesex College\n" +
         "\n" +
         "Getting Started \n" +
         "- select the building logo and click on the different buildings drop down menu to check the mapping of the different floors\n" +
@@ -59,7 +59,7 @@ public class Application extends javax.swing.JFrame {
     //private Map activeMapObj;
     //private Map map = new Map("MIDDLESEX");
     private POI[] currPoiList;
-    
+    private Map[] listOfMaps;
     private HashMap<String, int[]> poiNameToPos = new HashMap<>(); //key: poi name, value: (x,y) coords as array
     private HashMap<javax.swing.JLabel, POI> poiLabels = new HashMap<>(); //key: poi jlabel reference, value: POI obj reference
     private HashMap<Category, Boolean> activeLayers = new HashMap<>(); //key: Category enum type, value: true or false
@@ -100,6 +100,23 @@ public class Application extends javax.swing.JFrame {
      * Start the application (after login).
      */
     public void start(String chosenBuilding) {
+        
+//        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+//        Component frameSelf = this;
+//        this.addWindowListener(new java.awt.event.WindowAdapter() {
+//            @Override
+//            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+//                if (JOptionPane.showConfirmDialog(frameSelf, 
+//                    "You have unsaved changes. ?", "Close Window?", 
+//                    JOptionPane.YES_NO_OPTION,
+//                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+//                    System.exit(0);
+//                }
+//            }
+//        });
+
+//        listOfMaps = gis_system.load(); //get all 13 maps loaded with the poi data 
+        
         System.out.println(chosenBuilding + " chosen...");
         buildingSelectPanel.setVisible(false);
         mapPanel.setVisible(true);
@@ -139,10 +156,10 @@ public class Application extends javax.swing.JFrame {
         //TODO: need to somehow override the windowlister for this jframe. Cant right now beause netbeans doesnt allow me to edit the frame on exit action.
         //look into this...
         //check for unsaved changes
-        
-        if (unsavedChanges) {
-            JOptionPane.showMessageDialog(this, "You have unsaved changes.", "Unsaved Changes", JOptionPane.WARNING_MESSAGE);
-        }
+//        
+//        if (unsavedChanges) {
+//            JOptionPane.showMessageDialog(this, "You have unsaved changes.", "Unsaved Changes", JOptionPane.WARNING_MESSAGE);
+//        }
     }
     
     public void loadFavourites() {
@@ -268,6 +285,36 @@ public class Application extends javax.swing.JFrame {
     public String getActiveMap() {
         return this.activeMap;
     }
+    
+    public void searchPOI(String poiName) {
+        System.out.println("Searching for " + poiName);
+        //iterate through each map, linear search with getPOI -> and center the viewport to it, switch map if needed
+        for (Map m : listOfMaps) {
+            POI p = m.getPOI(poiName);
+            if (p != null) {
+                //switch map if needed
+                if (!this.getActiveMap().equals(m.getName())) {
+                    String newMap = ""; 
+                    String newFloor = "";
+                    String oldMap = m.getName();
+                    if (oldMap.contains("MIDDLESEX")) newMap = "MIDDLESEX COLLEGE";
+                    else if (oldMap.contains("ALUMNI")) newMap = "ALUMNI HALL";
+                    else if (oldMap.contains("NORTH_CAMPUS")) newMap = "NORTH CAMPUS BUILDING";
+                    
+                    newFloor = "LEVEL_" + oldMap.substring(oldMap.length() - 1, oldMap.length());
+                    
+                    changeMap(newMap, newFloor);
+                }
+                //center viewport to it
+                int[] pos = p.getPosition();
+                mapImageScrollPane.getViewport().setViewPosition(new Point(pos[0], pos[1]));
+                System.out.println("Found POI!");
+                return;
+            }
+        }
+        
+        JOptionPane.showMessageDialog(this, "The POI you searched for could not be found.", "Could not find POI", JOptionPane.ERROR_MESSAGE);
+    }
 
     /**
      * Alters the visibility of a POI layer
@@ -331,6 +378,9 @@ public class Application extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         favList = new javax.swing.JList<>();
         jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        searchField = new javax.swing.JTextField();
+        searchButton = new javax.swing.JButton();
         buildingPanel = new javax.swing.JPanel();
         buildingChangeLabel = new javax.swing.JLabel();
         closeBuilding = new javax.swing.JLabel();
@@ -349,8 +399,6 @@ public class Application extends javax.swing.JFrame {
         customSelectLabel = new javax.swing.JLabel();
         closeCustom = new javax.swing.JLabel();
         createPOIButton = new javax.swing.JButton();
-        editPOIButton = new javax.swing.JButton();
-        deletePOIButton = new javax.swing.JButton();
         jLayeredPane1 = new javax.swing.JLayeredPane();
         mapImageScrollPane = new javax.swing.JScrollPane();
         mapImageLabel = new javax.swing.JLabel();
@@ -584,7 +632,7 @@ public class Application extends javax.swing.JFrame {
 
         weatherLabel.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         weatherLabel.setForeground(new java.awt.Color(255, 255, 255));
-        weatherLabel.setText("N/A");
+        weatherLabel.setText("No Internet");
 
         guiPOIList.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -600,7 +648,7 @@ public class Application extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Current POI's");
+        jLabel1.setText("Search POI");
 
         favList.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -618,6 +666,18 @@ public class Application extends javax.swing.JFrame {
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Favourites");
 
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("Current POI's");
+
+        searchButton.setBackground(new java.awt.Color(255, 255, 255));
+        searchButton.setText("Find");
+        searchButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout blackMenuPanelLayout = new javax.swing.GroupLayout(blackMenuPanel);
         blackMenuPanel.setLayout(blackMenuPanelLayout);
         blackMenuPanelLayout.setHorizontalGroup(
@@ -626,29 +686,31 @@ public class Application extends javax.swing.JFrame {
                 .addGroup(blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(blackMenuPanelLayout.createSequentialGroup()
                         .addGroup(blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(helpButton)
                             .addGroup(blackMenuPanelLayout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(helpButton)
                                     .addComponent(buildingMenuButton)
                                     .addComponent(layersMenuButton)
-                                    .addComponent(customMenuButton)))
-                            .addGroup(blackMenuPanelLayout.createSequentialGroup()
-                                .addGap(29, 29, 29)
-                                .addComponent(weatherLabel))
-                            .addGroup(blackMenuPanelLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabel1))
-                            .addGroup(blackMenuPanelLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabel2)))
-                        .addGap(0, 31, Short.MAX_VALUE))
+                                    .addComponent(customMenuButton)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3))))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(blackMenuPanelLayout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1)
-                            .addComponent(jScrollPane3))))
+                            .addGroup(blackMenuPanelLayout.createSequentialGroup()
+                                .addComponent(weatherLabel)
+                                .addGap(0, 19, Short.MAX_VALUE))
+                            .addComponent(jScrollPane3)
+                            .addComponent(searchField))))
                 .addContainerGap())
+            .addGroup(blackMenuPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(searchButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         blackMenuPanelLayout.setVerticalGroup(
             blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -659,15 +721,21 @@ public class Application extends javax.swing.JFrame {
                 .addComponent(layersMenuButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(customMenuButton)
-                .addGap(27, 27, 27)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(searchButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 77, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(helpButton)
                 .addGap(18, 18, 18)
                 .addComponent(weatherLabel)
@@ -883,20 +951,6 @@ public class Application extends javax.swing.JFrame {
             }
         });
 
-        editPOIButton.setText("Edit POI");
-        editPOIButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editPOIButtonActionPerformed(evt);
-            }
-        });
-
-        deletePOIButton.setText("Delete POI");
-        deletePOIButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deletePOIButtonActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout customPanelLayout = new javax.swing.GroupLayout(customPanel);
         customPanel.setLayout(customPanelLayout);
         customPanelLayout.setHorizontalGroup(
@@ -907,8 +961,6 @@ public class Application extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(closeCustom))
             .addComponent(createPOIButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(editPOIButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(deletePOIButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         customPanelLayout.setVerticalGroup(
             customPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -920,11 +972,7 @@ public class Application extends javax.swing.JFrame {
                     .addComponent(closeCustom))
                 .addGap(18, 18, 18)
                 .addComponent(createPOIButton)
-                .addGap(18, 18, 18)
-                .addComponent(editPOIButton)
-                .addGap(18, 18, 18)
-                .addComponent(deletePOIButton)
-                .addGap(0, 8, Short.MAX_VALUE))
+                .addGap(0, 25, Short.MAX_VALUE))
         );
 
         mapImageLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/maps/MIDDLESEX_COLLEGE_LEVEL_2.png"))); // NOI18N
@@ -978,7 +1026,7 @@ public class Application extends javax.swing.JFrame {
                 .addComponent(layerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(43, 43, 43)
                 .addComponent(customPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 161, Short.MAX_VALUE))
             .addComponent(jLayeredPane1)
         );
 
@@ -1130,7 +1178,7 @@ public class Application extends javax.swing.JFrame {
 
     private void helpButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_helpButtonMouseClicked
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "Current User: user.getName(). " + this.HELP_TEXT, "Help", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, this.HELP_TEXT, "Help", JOptionPane.INFORMATION_MESSAGE);
 
     }//GEN-LAST:event_helpButtonMouseClicked
 
@@ -1165,14 +1213,6 @@ public class Application extends javax.swing.JFrame {
 //        this.editMode = false;
 //        this.deleteMode = false;
     }//GEN-LAST:event_createPOIButtonActionPerformed
-
-    private void editPOIButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editPOIButtonActionPerformed
-        
-    }//GEN-LAST:event_editPOIButtonActionPerformed
-
-    private void deletePOIButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deletePOIButtonActionPerformed
-         
-    }//GEN-LAST:event_deletePOIButtonActionPerformed
 
     private void buildingChangeLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buildingChangeLabelMouseClicked
         // TODO add your handling code here:
@@ -1274,7 +1314,31 @@ public class Application extends javax.swing.JFrame {
                             addFavButton.repaint();
                         }
                   });
-                  JOptionPane.showOptionDialog(frameSelf, new Object[] {"Name: " + poiLabels.get(tempJLabel).getName() + "\n Layer: " + pLayer + "\n", addFavButton},
+                  JButton deleteButton = new JButton("Delete");
+                  deleteButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+//                            
+                              //delete POI entry from Map
+                              String poiName = poiLabels.get(tempJLabel).getName();
+//                              currMap.deletePOI(poiName); //UNCOMMENT THIS
+
+                              //delete JLabel entry
+                              poiLabels.remove(tempJLabel);
+                        }
+                  });
+                  
+                  JButton editButton = new JButton("Edit");
+                  editButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                              //make a popup... get the data from the action listener...
+                              //delete poi from map    
+                              //add poi back into map
+                        }
+                  });
+                  
+                  JOptionPane.showOptionDialog(frameSelf, new Object[] {"Name: " + poiLabels.get(tempJLabel).getName() + "\n Layer: " + pLayer + "\n", addFavButton, editButton, deleteButton},
                     "POI Information", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, null, null);
 //                   JOptionPane.showMessageDialog(frameSelf, "Name: " + poiLabels.get(tempJLabel).getName() + "\n Layer: " + pLayer + "\n", "POI Information", JOptionPane.INFORMATION_MESSAGE);
                 }
@@ -1327,6 +1391,12 @@ public class Application extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_mapImageLabelMouseClicked
+
+    private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
+        // TODO add your handling code here:
+        searchPOI(searchField.getText());
+        searchField.setText("");
+    }//GEN-LAST:event_searchButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1382,8 +1452,6 @@ public class Application extends javax.swing.JFrame {
     private javax.swing.JButton customMenuButton;
     private javax.swing.JPanel customPanel;
     private javax.swing.JLabel customSelectLabel;
-    private javax.swing.JButton deletePOIButton;
-    private javax.swing.JButton editPOIButton;
     private javax.swing.JCheckBox elevatorCheckbox;
     private javax.swing.JList<String> favList;
     private javax.swing.JLabel group42Label;
@@ -1392,6 +1460,7 @@ public class Application extends javax.swing.JFrame {
     private javax.swing.JButton helpButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -1414,6 +1483,8 @@ public class Application extends javax.swing.JFrame {
     private javax.swing.JPasswordField passwordField;
     private javax.swing.JLabel passwordLabel;
     private javax.swing.JCheckBox restaurantCheckbox;
+    private javax.swing.JButton searchButton;
+    private javax.swing.JTextField searchField;
     private javax.swing.JLabel selectBuildingLabel;
     private javax.swing.JLabel usernameLabel;
     private javax.swing.JTextField usernameTextField;
