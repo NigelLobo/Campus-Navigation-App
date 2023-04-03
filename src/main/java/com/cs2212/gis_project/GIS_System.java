@@ -145,7 +145,7 @@ public class GIS_System {
            for (int j = 0; j < maps[i].listPOI.size(); j++)
            {
                JSONObject poiData = new JSONObject();
-               POI poi = maps[i].listPOI.get(j);
+               POI poi = (POI) maps[i].listPOI.get(j);
                poiData.put("name", poi.getName());
                poiData.put("type", poi.getType());
                poiData.put("posX", poi.getPosition()[0]);
@@ -167,7 +167,7 @@ public class GIS_System {
            for (int j = 0; j < maps[i].listPOI.size(); j++)
            {
                JSONObject poiData = new JSONObject();
-               POI poi = maps[i].listPOI.get(j);
+               POI poi = (POI) maps[i].listPOI.get(j);
                poiData.put("name", poi.getName());
                poiData.put("type", poi.getType());
                poiData.put("posX", poi.getPosition()[0]);
@@ -189,7 +189,7 @@ public class GIS_System {
            for (int j = 0; j < maps[i].listPOI.size(); j++)
            {
                JSONObject poiData = new JSONObject();
-               POI poi = maps[i].listPOI.get(j);
+               POI poi = (POI) maps[i].listPOI.get(j);
                poiData.put("name", poi.getName());
                poiData.put("type", poi.getType());
                poiData.put("posX", poi.getPosition()[0]);
