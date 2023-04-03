@@ -4,15 +4,13 @@ package com.cs2212.gis_project;
 public class POI {
     
     private String name;
-    private int id;
     private Category category;
     private int[] position = new int [2];
     private boolean active = true;
     private boolean isFavourite = false;
     
-    public POI(String name, int id, Category category, int x, int y) {
+    public POI(String name, Category category, int x, int y) {
         this.name = name;
-        this.id = id;
         this.category = category;
         this.position = new int[]{x,y};
     }
@@ -23,10 +21,6 @@ public class POI {
     
     public void setName(String newName) {
         this.name = newName;
-    }
-    
-    public int getID() {
-        return id;
     }
     
     public Category getType() {
