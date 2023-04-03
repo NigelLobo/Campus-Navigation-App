@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Map {
     private String mapName;
-    public ArrayList listPOI = new ArrayList();
+    public ArrayList<POI> listPOI = new ArrayList<POI>();
     
     public Map(String name) {
         this.mapName = name;
@@ -14,8 +14,8 @@ public class Map {
         return mapName;
     }
     
-    public void addPOI(String name,int id, Category type, int x, int y) {
-        POI newPOI = new POI(name,id,type,x,y);
+    public void addPOI(String name, Category type, int x, int y) {
+        POI newPOI = new POI(name,type,x,y);
         listPOI.add(newPOI);
     }
     

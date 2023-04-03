@@ -10,7 +10,7 @@ public class POI {
     private boolean active = true;
     private boolean isFavourite = false;
     
-    public POI(String name, int id, Category category, int x, int y) {
+    public POI(String name, Category category, int x, int y) {
         this.name = name;
         this.id = id;
         this.category = category;
