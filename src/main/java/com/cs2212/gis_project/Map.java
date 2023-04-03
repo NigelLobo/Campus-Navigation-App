@@ -14,8 +14,8 @@ public class Map {
         return mapName;
     }
     
-    public void addPOI(String name,int id, Category type, int x, int y) {
-        POI newPOI = new POI(name,id,type,x,y);
+    public void addPOI(String name, Category type, int x, int y) {
+        POI newPOI = new POI(name,type,x,y);
         listPOI.add(newPOI);
     }
     

@@ -37,6 +37,24 @@ public class GIS_System {
         return s_Instance;
     }
     
+    public boolean login(String username, String password)
+    {
+        try {
+            URL obj = this.getClass().getClassLoader().getResource("data/app.json");    
+            String contents = new String(Files.readAllBytes(Paths.get(obj.getFile())));
+            JSONObject buildings = new JSONObject(contents);
+            JSONObject user = buildings.getJSONObject("user");
+            if (username.equals(user.get("username")) && password.equals(user.get("password")))
+                    return true;
+            else
+                return false;
+        }
+        catch(IOException e)
+        {
+           return false;
+        }
+    }
+    
     public Map[] Load()
     {
         try {

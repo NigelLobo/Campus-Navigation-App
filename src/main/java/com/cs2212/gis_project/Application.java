@@ -1277,7 +1277,7 @@ public class Application extends javax.swing.JFrame {
             if (result == JOptionPane.OK_OPTION) {
                 //make a new POI
                 Category devType = typesEnum[layerDropdown.getSelectedIndex()];
-                POI devPOI = new POI(nameField.getText(), 0, devType, evt.getX(), evt.getY());
+                POI devPOI = new POI(nameField.getText(), devType, evt.getX(), evt.getY());
                 //map.addPOI(nameField.getText(), 0, Category.CUSTOM, evt.getX(), evt.getY())
                 //add to hashmap
                 int[] coord = {evt.getX(), evt.getY()};
@@ -1297,7 +1297,7 @@ public class Application extends javax.swing.JFrame {
           "Create POI", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
             if (result == JOptionPane.OK_OPTION) {
                 //make a new POI
-                POI newPOI = new POI(nameField.getText(), 0, Category.CUSTOM, evt.getX(), evt.getY());
+                POI newPOI = new POI(nameField.getText(), Category.CUSTOM, evt.getX(), evt.getY());
                 //map.addPOI(nameField.getText(), 0, Category.CUSTOM, evt.getX(), evt.getY())
                 //add to hashmap
                 int[] coord = {evt.getX(), evt.getY()};
