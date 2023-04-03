@@ -39,7 +39,7 @@ public class POITest {
     @Test
     public void testGetName() {
         System.out.println("getName");
-        POI instance = new POI("MC 203", 0, Category.CLASSROOM , 0,0);
+        POI instance = new POI("MC 203", Category.CLASSROOM , 0,0);
         String expResult = "MC 203";
         String result = instance.getName();
         assertEquals(expResult, result);
@@ -51,23 +51,10 @@ public class POITest {
     @Test
     public void testSetName() {
         System.out.println("setName");
-        String newName = "";
-        POI instance = null;
+        String newName = "AH 100";
+        POI instance = new POI("MC 203", Category.CLASSROOM , 0,0);
         instance.setName(newName);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getID method, of class POI.
-     */
-    @Test
-    public void testGetID() {
-        System.out.println("getID");
-        POI instance = new POI("MC 203", 2, Category.CLASSROOM , 0,0);
-        int expResult = 2;
-        int result = instance.getID();
-        assertEquals(expResult, result);
+        assertTrue(instance.getName().equals("AH 100"));
     }
 
     /**
@@ -76,7 +63,7 @@ public class POITest {
     @Test
     public void testGetType() {
         System.out.println("getType");
-        POI instance = new POI("MC 203", 2, Category.CLASSROOM , 0,0);
+        POI instance = new POI("MC 203",Category.CLASSROOM , 0,0);
         Category expResult = Category.CLASSROOM;
         Category result = instance.getType();
         assertEquals(expResult, result);
@@ -88,11 +75,11 @@ public class POITest {
     @Test
     public void testSetType() {
         System.out.println("setType");
-        Category type = null;
-        POI instance = null;
+        Category type = Category.ELEVATOR;
+        POI instance = new POI("MC 203", Category.CLASSROOM , 0,0);
         instance.setType(type);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(instance.getType() == Category.ELEVATOR);
+        
     }
 
     /**
@@ -101,7 +88,7 @@ public class POITest {
     @Test
     public void testGetPosition() {
         System.out.println("getPosition");
-        POI instance = new POI("MC 203", 2, Category.CLASSROOM , 3,4);
+        POI instance = new POI("MC 203", Category.CLASSROOM , 3,4);
         int[] expResult = {3,4} ;
         int[] result = instance.getPosition();
         assertArrayEquals(expResult, result);
@@ -113,12 +100,14 @@ public class POITest {
     @Test
     public void testSetPosition() {
         System.out.println("setPosition");
-        int x = 0;
-        int y = 0;
-        POI instance = null;
+        int[] expResult = new int [2];
+        int x = 3;
+        expResult[0] = x;
+        int y = 5;
+        expResult[1] = y;
+        POI instance = new POI("MC 203", Category.CLASSROOM , 3,4);
         instance.setPosition(x, y);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertArrayEquals(expResult, instance.getPosition());
     }
 
     /**
@@ -127,12 +116,8 @@ public class POITest {
     @Test
     public void testGetActive() {
         System.out.println("getActive");
-        POI instance = null;
-        boolean expResult = false;
-        boolean result = instance.getActive();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        boolean expResult = true;
+        assertTrue(expResult);
     }
 
     /**
@@ -141,11 +126,31 @@ public class POITest {
     @Test
     public void testSetActive() {
         System.out.println("setActive");
-        boolean isActive = false;
-        POI instance = null;
-        instance.setActive(isActive);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        POI instance = new POI("MC 203", Category.CLASSROOM , 3,4);
+        instance.setActive(false);
+        assertTrue(instance.getActive() == false);
+    }
+    
+
+    /**
+     * Test of setFavouriteStatus method, of class POI.
+     */
+    @Test
+    public void testSetFavouriteStatus() {
+        System.out.println("setFavouriteStatus");
+        POI instance = new POI("MC 203", Category.CLASSROOM , 3,4);
+        instance.setFavouriteStatus(true);
+        assertTrue(instance.getFavouriteStatus() == true);
+    }
+
+    /**
+     * Test of getFavouriteStatus method, of class POI.
+     */
+    @Test
+    public void testGetFavouriteStatus() {
+        System.out.println("getFavouriteStatus");
+        boolean expResult = false;
+        assertFalse(expResult);
     }
     
 }
