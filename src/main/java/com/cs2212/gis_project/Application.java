@@ -34,12 +34,27 @@ public class Application extends javax.swing.JFrame {
         "MC - middlesex college\n" +
         "\n" +
         "Getting Started \n" +
-        "- click on drop down menu on buildings to check the different floors\n" +
-        "- toggle layers to make certain POIs visible\n" +
-        "- create any POI that may interest you\n" +
+        "- select the building logo and click on the different buildings drop down menu to check the mapping of the different floors\n" +
+        "- select the layers icon to toggle layers to make display only certain POIs to make it easier to search for what you want\n" +
+        "- select the editing icon to create a POI, delete a POI, or edit a POI\n" +
+        "\n" +
+        "Custom POIs\n" +
+        "- to create just click on an area of the map you want to create a POI of and enter the name of the POI and select the layer type\n" +
+        "- to delete ...\n" +
+        "- to edit ...\n" +
         "\n" +
         "About us:\n" +
-        "We are a team consisting of 5 student developers who created this map application in hopes of making navigating western buildings easier";
+        "We are a team consisting of 5 student developers who created group 42 western's GIS application in hopes of making navigating western buildings easier\n" +
+        "Version : \n" +
+        "Release Date : \n" +
+        "\n" +
+        "Contact us\n" +
+        "Nigel Lobo @nlogo9@uwo.ca\n" +
+        "Daniel Ngo @dhoang22@uwo.ca\n" +
+        "Charmaine Lee @slee2769@uwo.ca\n" +
+        "Rafay Kashif @rkashif3@uwo.ca\n" +
+        "Sue Han @zhan246@uwo.ca";
+        
 //    private String[] mapFiles = { "maps/mc0.png", "maps/mc1.png", "maps/mc2.png", "maps/mc3.png", "maps/mc4.png"};
     //private Map activeMapObj;
     //private Map map = new Map("MIDDLESEX");
