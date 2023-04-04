@@ -23,16 +23,23 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
- *
+ * This is the System class, responsible for all file handling.
+ * The class follows a singleton method, and as such there is no way to instantiate it.
+ * The class is already instantiated, and to get a reference to the instance, simply call the getInstance method.
  * @author Rafay Kashif
  */
 public class GIS_System {
     
+    /* private static instance of the class */
     private static final GIS_System s_Instance = new GIS_System();
     
+    /* HashMaps used to convert between strings and the Category enum */
     private HashMap<String, Category> stringToCategory;
     private HashMap<Category, String> categoryToString;
     
+    /**
+     * Constructor for the class. Initializes the HashMaps and adds the conversion keys into them.
+     */
     private GIS_System() {
         stringToCategory = new HashMap<String, Category>();
         stringToCategory.put("C", Category.CLASSROOM);
@@ -51,16 +58,26 @@ public class GIS_System {
         categoryToString.put(Category.CUSTOM, "T");
     }
     
+    /**
+     * Static method for retrieving the singleton instance of the class
+     * @return the static instance of the class.
+     */
     public static GIS_System getInstance()
     {
         return s_Instance;
     }
     
-    public boolean login(String username, String password)
+    /**
+     * Reads the JSON file and determines if the provided username and password match the admin one.
+     * @param username A string containing the specified username to be checked.
+     * @param password A string containing the specified password to be checked.
+     * @return true if the username and password match, false otherwise.
+     */
+    public boolean login(String path, String username, String password)
     {
         try {
             //URL obj = this.getClass().getClassLoader().getResource("data/app.json"); 
-            String path = "src/resources/data/app.json";
+            //String path = "src/resources/data/app.json";
             String contents = new String(Files.readAllBytes(Paths.get(path)));
             JSONObject buildings = new JSONObject(contents);
             JSONObject user = buildings.getJSONObject("user");
@@ -75,6 +92,11 @@ public class GIS_System {
         }
     }
     
+    /**
+     * Loads all the contents of the JSON file into the program.
+     * @param path the path of the specified JSON file to load from
+     * @return A list of all the Map objects created from the JSON file, or null if there was any error.
+     */
     public Map[] Load(String path)
     {
         try {
@@ -90,11 +112,13 @@ public class GIS_System {
             
             Map[] maps = new Map[13];
             
+            /* Loop through every floor of Alumni hall */
             int floorLevel = 2;
             for (int i = 0; i < 3; i++)
             {
                 JSONArray poiList = alumni.getJSONArray("LEVEL_" + floorLevel);
                 ArrayList<POI> pois = new ArrayList<POI>();
+                /* Loop through every POI in the floor */
                 for (int j = 0; j < poiList.length(); j++)
                 {
                     JSONObject currentPOI = poiList.getJSONObject(j);
@@ -158,6 +182,12 @@ public class GIS_System {
         }
     }
     
+    /**
+     * Saves all the contents of the maps in the program to a specified JSON file
+     * @param maps list of all the Map objects
+     * @param path path to the specified JSON file
+     * @return true if the save was successful, false otherwise
+     */
     public boolean Save(Map[] maps, String path)
     {
         JSONObject buildings = new JSONObject();
@@ -165,10 +195,12 @@ public class GIS_System {
         JSONObject middlesex = new JSONObject();
         JSONObject ncb = new JSONObject();
         
+        /* Loop through each floor level */
         int floorLevel = 2;
         for (int i = 0; i < 3; i++)
         {
             JSONArray poiList = new JSONArray();
+            /* Loop through each POI */
            for (int j = 0; j < maps[i].listPOI.size(); j++)
            {
                JSONObject poiData = new JSONObject();
@@ -236,10 +268,11 @@ public class GIS_System {
         
         //USERNAME AND PASSWORD FOR ADMIN
         JSONObject user = new JSONObject();
-        user.put("username", "Admin");
+        user.put("username", "Bobby");
         user.put("password", "123456");
-
+        
         buildings.put("user", user);
+        
         
         //URL obj = this.getClass().getClassLoader().getResource("data/app.json");
         //String path = "src/resources/data/app.json";
