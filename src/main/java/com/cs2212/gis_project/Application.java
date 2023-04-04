@@ -66,6 +66,7 @@ public class Application extends javax.swing.JFrame {
     private HashMap<String, Map> maps = new HashMap<>(); //key: map name, value: map object
 //    private HashMap<String, String> jsonMapToName = new HashMap<>();
     private GIS_System gis_system = GIS_System.getInstance();
+    private javax.swing.JLabel arrow = new javax.swing.JLabel();
 
     /**
      * Creates new form GUI
@@ -101,7 +102,7 @@ public class Application extends javax.swing.JFrame {
      * Start the application (after login).
      */
     public void start(String chosenBuilding) {
-        
+        arrow.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/arrow-pointing-down.png")));
         if (devMode) userModeLabel.setText("Admin Mode");
         else userModeLabel.setText("Guest Mode");
 //        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -331,9 +332,10 @@ public class Application extends javax.swing.JFrame {
 
                               }
                         });
-
+                        highlightPOI(poiLabels.get(labelRef).getPosition()[0],poiLabels.get(labelRef).getPosition()[1]);
                         JOptionPane.showOptionDialog(frameSelf, new Object[] {"Name: " + poiLabels.get(labelRef).getName() + "\n Layer: " + pLayer + "\n", editButton, deleteButton, "Close Menu to see changes made from editing."},
                           "Builtin POI Information", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, null, null);
+
 
                    } 
                    //custom (admin and guest can edit)
@@ -385,8 +387,10 @@ public class Application extends javax.swing.JFrame {
 
                               }
                         });
+                        highlightPOI(poiLabels.get(labelRef).getPosition()[0],poiLabels.get(labelRef).getPosition()[1]);
                         JOptionPane.showOptionDialog(frameSelf, new Object[] {"Name: " + poiLabels.get(labelRef).getName() + "\n Layer: " + pLayer + "\n", editButton, deleteButton, "Close Menu to see changes made from editing."},
                           "Custom", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, null, null);
+
                    }
                    //builtin, guest
                    else {
@@ -416,8 +420,10 @@ public class Application extends javax.swing.JFrame {
                                   gis_system.Save(listOfMaps,"src/resources/data/app.json");
                               }
                         });
+                       highlightPOI(poiLabels.get(labelRef).getPosition()[0],poiLabels.get(labelRef).getPosition()[1]);
                        JOptionPane.showOptionDialog(frameSelf, new Object[] {"Name: " + poiLabels.get(labelRef).getName() + "\n Layer: " + pLayer + "\n", addFavButton},
                           "Builtin", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, null, null);
+
                    }
                 }
             });
@@ -510,7 +516,9 @@ public class Application extends javax.swing.JFrame {
                 }
                 //center viewport to it
                 int[] pos = p.getPosition();
-                mapImageScrollPane.getViewport().setViewPosition(new Point(pos[0], pos[1]));
+//                mapImageScrollPane.getViewport().setViewPosition(new Point(pos[0], pos[1]));
+                mapImageScrollPane.getViewport().setViewPosition(getIdealViewPos(pos[0], pos[1]));
+                highlightPOI(pos[0], pos[1]);
                 System.out.println("Found POI!");
                 buildingPanel.setVisible(false);
                 return;
@@ -1369,7 +1377,19 @@ public class Application extends javax.swing.JFrame {
     private void buildingTreeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buildingTreeMouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_buildingTreeMouseClicked
-
+    
+    private Point getIdealViewPos(int x, int y) {
+        //split the map into 4 quadrants,
+        //check which quadrant the poi lies in
+        //return desired quadrant as a Point object
+        Dimension dim = mapImageLabel.getSize();
+        if (x <= dim.width / 2 && y <= dim.height / 2) return new Point(0,0);
+        else if (x <= dim.width / 2 && y > dim.height / 2) return new Point(0, dim.height / 2);
+        else if (x > dim.width / 2 && y > dim.height / 2) return new Point(dim.width / 2, dim.height / 2);
+        else return new Point(dim.width / 2, 0);
+        
+    }
+    
     private void buildingTreeValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_buildingTreeValueChanged
         // TODO add your handling code here:
         //get selected node from Building JTree
@@ -1436,7 +1456,9 @@ public class Application extends javax.swing.JFrame {
             String name = guiPOIList.getSelectedValue();
             int[] pos = poiNameToPos.get(name);
             //center scroll pane to currently selected poi
-            mapImageScrollPane.getViewport().setViewPosition(new Point(pos[0], pos[1]));
+//            mapImageScrollPane.getViewport().setViewPosition(new Point(pos[0], pos[1]));
+            mapImageScrollPane.getViewport().setViewPosition(getIdealViewPos(pos[0], pos[1]));
+            highlightPOI(pos[0], pos[1]);
         }
         
     }//GEN-LAST:event_guiPOIListValueChanged
@@ -1470,7 +1492,21 @@ public class Application extends javax.swing.JFrame {
     private void customCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customCheckboxActionPerformed
         toggleLayer(Category.CUSTOM, customCheckbox.isSelected());
     }//GEN-LAST:event_customCheckboxActionPerformed
-
+    
+    /**
+     * Centers POI and inserts arrow image above POI
+     * @param x the x coordinate of poi
+     * @param y the y coordinate of poi
+     */
+    public void highlightPOI(int x, int y) {
+        arrow.setVisible(true);
+        y = y - 50;
+        x = x + 20;
+        arrow.setBounds(x,y,30,30);
+        mapImageLabel.add(arrow, new Integer(0));
+        mapImageLabel.repaint();
+    }
+    
     private void mapImageLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mapImageLabelMouseClicked
         // TODO add your handling code here:
         if (!this.creationMode) return;
@@ -1575,9 +1611,10 @@ public class Application extends javax.swing.JFrame {
                            
                         }
                   });
-                  
+                  highlightPOI(poiLabels.get(tempJLabel).getPosition()[0],poiLabels.get(tempJLabel).getPosition()[1]);
                   JOptionPane.showOptionDialog(frameSelf, new Object[] {"Name: " + poiLabels.get(tempJLabel).getName() + "\n Layer: " + pLayer + "\n", addFavButton, editButton, deleteButton, "Click OK to Save. Close all menus to see results of edits made.",  "Admin cannot set favourites."},
                     "POI Information", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, null, null);
+                  
 //                   JOptionPane.showMessageDialog(frameSelf, "Name: " + poiLabels.get(tempJLabel).getName() + "\n Layer: " + pLayer + "\n", "POI Information", JOptionPane.INFORMATION_MESSAGE);
                 }
             });
