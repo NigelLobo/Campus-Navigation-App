@@ -24,7 +24,7 @@ import javax.swing.JTextField;
 public class Application extends javax.swing.JFrame {
     private javax.swing.JLabel tempJLabel;
     private Point mousePos;
-    private boolean creationMode, devMode;
+    private boolean creationMode, devMode, loadingFavs, loadingCurrent;
     private String activeMap;
     private User activeUser;
     private Map currMap;
@@ -122,6 +122,11 @@ public class Application extends javax.swing.JFrame {
         for (Map m : listOfMaps) {
             maps.put(m.getName(), m);
             System.out.println("Loaded map: " + m.getName());
+            ArrayList<POI> tempPOIList = m.getPOIList();
+            for (POI p : tempPOIList) {
+                int[] pos = p.getPosition();
+                poiNameToPos.put(p.getName(), pos);
+            }
         }
         
         System.out.println(chosenBuilding + " chosen...");
@@ -161,6 +166,7 @@ public class Application extends javax.swing.JFrame {
         customCheckbox.setSelected(true);
         
         loadPOIs(path);
+        loadFavourites();
         
         
     }
@@ -178,16 +184,46 @@ public class Application extends javax.swing.JFrame {
 //        }
     }
     
+    public void loadCurrent(ArrayList<POI> list) {
+        loadingCurrent = true;
+        String[] names = new String[currPoiList.size()];
+        for (int i = 0; i < currPoiList.size(); i++) {
+            names[i] = currPoiList.get(i).getName();
+        }
+        guiPOIList.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = names;
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        
+        mapImageLabel.repaint();
+        guiPOIList.repaint();
+        loadingCurrent = false;
+    }
+    
     public void loadFavourites() {
         //iterate through current displayed poi list and if favourite, add to favourite list
-        String[] listOfFavourites = new String[2];//= [currActiveList.length]
+        loadingFavs = true;
+        ArrayList<POI> listOfFavs = new ArrayList<>();
+        for (Map m : listOfMaps) {
+            ArrayList<POI> temp = m.getPOIList();
+            for (POI p : temp) {
+                if (p.getFavouriteStatus()) listOfFavs.add(p);
+            }
+        }
         
+        String[] listOfFavourites = new String[listOfFavs.size()];
+        for (int i = 0; i < listOfFavs.size(); i++) {
+            listOfFavourites[i] = listOfFavs.get(i).getName();
+        }
         favList.setModel(new javax.swing.AbstractListModel<String>() {
 //            String[] strings = names; //SHOULD BE THIS
             String[] strings = listOfFavourites; 
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        favList.repaint();
+        loadingFavs = false;
     }
     
     public void loadPOIs(String buildingFloorFilePath) {
@@ -203,16 +239,17 @@ public class Application extends javax.swing.JFrame {
         currMap = maps.get(buildingName + "_" + floorNum);
         currPoiList = currMap.getPOIList();
 //          ArrayList<POI> poiList = currMap.getPOIList();
-        String[] names = new String[currPoiList.size()];
-        for (int i = 0; i < currPoiList.size(); i++) {
-            names[i] = currPoiList.get(i).getName();
-        }
-        guiPOIList.setModel(new javax.swing.AbstractListModel<String>() {
-//            String[] strings = names; //SHOULD BE THIS
-            String[] strings = names; 
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
+//        String[] names = new String[currPoiList.size()];
+//        for (int i = 0; i < currPoiList.size(); i++) {
+//            names[i] = currPoiList.get(i).getName();
+//        }
+//        guiPOIList.setModel(new javax.swing.AbstractListModel<String>() {
+////            String[] strings = names; //SHOULD BE THIS
+//            String[] strings = names; 
+//            public int getSize() { return strings.length; }
+//            public String getElementAt(int i) { return strings[i]; }
+//        });
+        loadCurrent(currPoiList);
         Component frameSelf = this;
 //        POI[] poiList= {};// = map.getPOIList()
         for (POI p : currPoiList) {
@@ -222,6 +259,8 @@ public class Application extends javax.swing.JFrame {
             somePOILabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/poi.png")));
             mapImageLabel.add(somePOILabel,new Integer(10));
             poiLabels.put(somePOILabel, p);
+            int[] coords = p.getPosition();
+            poiNameToPos.put(p.getName(), coords);
             javax.swing.JLabel labelRef = somePOILabel;
             somePOILabel.addMouseListener(new MouseAdapter() {
                 @Override
@@ -249,9 +288,11 @@ public class Application extends javax.swing.JFrame {
                                     //delete POI entry from Map
                                     String poiName = poiLabels.get(labelRef).getName();
                                     currMap.deletePOI(poiName); 
-
+                           currPoiList = currMap.getPOIList();
+                                      loadCurrent(currPoiList);
                                     //delete JLabel entry
                                     poiLabels.remove(labelRef);
+                                    
                                     mapImageLabel.repaint();
                                     mapImageLabel.remove(labelRef);
                                     gis_system.Save(listOfMaps,"src/resources/data/app.json");
@@ -267,7 +308,7 @@ public class Application extends javax.swing.JFrame {
                                     String[] types = {"Classroom", "Restaurant", "Lab", "Washroom", "Elevator"};
                                     Category[] typesEnum = {Category.CLASSROOM, Category.RESTAURANT, Category.LAB, Category.WASHROOM, Category.ELEVATOR};
                                     JComboBox layerDropdown = new JComboBox(types);
-                                    int result = JOptionPane.showOptionDialog(frameSelf, new Object[] {"Edit name", editName, "Edit Layer", layerDropdown, "Press OK to Save. Close all menus and click again to see results."},
+                                    int result = JOptionPane.showOptionDialog(frameSelf, new Object[] {"Edit name", editName, "Edit Layer", layerDropdown, "Press OK to Save. Close all menus and click again to see results.", "Admin cannot set favourites."},
                           "Edit POI Information", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, null, null);
                                     
                                  if (result == JOptionPane.OK_OPTION) {
@@ -280,6 +321,8 @@ public class Application extends javax.swing.JFrame {
                                       int[] pos = poiLabels.get(labelRef).getPosition();
                                       POI editedPOI = new POI(editName.getText(), devType, pos[0], pos[1], false);
                                       currMap.addPOI(editName.getText(), devType, pos[0], pos[1]);
+                                      currPoiList = currMap.getPOIList();
+                                      loadCurrent(currPoiList);
                                       poiLabels.remove(labelRef);
                                       poiLabels.put(labelRef, editedPOI);
                                       gis_system.Save(listOfMaps,"src/resources/data/app.json");
@@ -305,7 +348,8 @@ public class Application extends javax.swing.JFrame {
                                     //delete POI entry from Map
                                     String poiName = poiLabels.get(labelRef).getName();
                                     currMap.deletePOI(poiName); 
-
+                                    currPoiList = currMap.getPOIList();
+                                    loadCurrent(currPoiList);
                                     //delete JLabel entry
                                     poiLabels.remove(labelRef);
                                     mapImageLabel.repaint();
@@ -332,6 +376,8 @@ public class Application extends javax.swing.JFrame {
                                       int[] pos = poiLabels.get(labelRef).getPosition();
                                       POI editedPOI = new POI(editName.getText(), Category.CUSTOM, pos[0], pos[1], false);
                                       currMap.addPOI(editName.getText(), Category.CUSTOM, pos[0], pos[1]);
+                                      currPoiList = currMap.getPOIList();
+                                      loadCurrent(currPoiList);
 //                                      poiLabels.remove(labelRef);
                                       poiLabels.put(labelRef, editedPOI);
                                       gis_system.Save(listOfMaps,"src/resources/data/app.json");
@@ -1384,26 +1430,27 @@ public class Application extends javax.swing.JFrame {
 
     private void guiPOIListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_guiPOIListValueChanged
         // TODO add your handling code here:
-        if (!guiPOIList.getValueIsAdjusting()) {
+        if (!guiPOIList.getValueIsAdjusting() && !loadingCurrent) {
             System.out.println(guiPOIList.getSelectedValue() + " was selected.");
             //center map to selected poi
             String name = guiPOIList.getSelectedValue();
             int[] pos = poiNameToPos.get(name);
             //center scroll pane to currently selected poi
-            mapImageScrollPane.getViewport().setViewPosition(new Point(pos[0], pos[1] ));
+            mapImageScrollPane.getViewport().setViewPosition(new Point(pos[0], pos[1]));
         }
         
     }//GEN-LAST:event_guiPOIListValueChanged
 
     private void favListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_favListValueChanged
         // TODO add your handling code here:
-        if (!favList.getValueIsAdjusting()) {
+        if (!favList.getValueIsAdjusting() && !loadingFavs) {
             System.out.println(favList.getSelectedValue() + " was selected from the favourites menu.");
             //center map to selected poi
             String name = favList.getSelectedValue();
-            int[] pos = poiNameToPos.get(name);
-            //center scroll pane to currently selected poi
-            mapImageScrollPane.getViewport().setViewPosition(new Point(pos[0], pos[1] ));
+            searchPOI(name);
+//            int[] pos = poiNameToPos.get(name);
+//            //center scroll pane to currently selected poi
+//            mapImageScrollPane.getViewport().setViewPosition(new Point(pos[0], pos[1] ));
         }
     }//GEN-LAST:event_favListValueChanged
 
@@ -1487,7 +1534,8 @@ public class Application extends javax.swing.JFrame {
                               //delete POI entry from Map
                               String poiName = poiLabels.get(tempJLabel).getName();
                               currMap.deletePOI(poiName); 
-
+                               currPoiList = currMap.getPOIList();
+                               loadCurrent(currPoiList);
                               //delete JLabel entry
                               poiLabels.remove(tempJLabel);
                               mapImageLabel.repaint();
@@ -1512,10 +1560,14 @@ public class Application extends javax.swing.JFrame {
                                 //delete poi from map
                                 String poiName = poiLabels.get(tempJLabel).getName();
                                 currMap.deletePOI(poiName);
+                                                           currPoiList = currMap.getPOIList();
+                                      loadCurrent(currPoiList);
                                 //add poi back into map
                                 int[] pos = poiLabels.get(tempJLabel).getPosition();
                                 POI editedPOI = new POI(editName.getText(), devType, pos[0], pos[1], false);
                                 currMap.addPOI(editName.getText(), devType, pos[0], pos[1]);
+                                                           currPoiList = currMap.getPOIList();
+                                      loadCurrent(currPoiList);
                                 poiLabels.remove(tempJLabel);
                                 poiLabels.put(tempJLabel, editedPOI);
                                 gis_system.Save(listOfMaps,"src/resources/data/app.json");
@@ -1524,7 +1576,7 @@ public class Application extends javax.swing.JFrame {
                         }
                   });
                   
-                  JOptionPane.showOptionDialog(frameSelf, new Object[] {"Name: " + poiLabels.get(tempJLabel).getName() + "\n Layer: " + pLayer + "\n", addFavButton, editButton, deleteButton, "Click OK to Save. Close all menus to see results of edits made."},
+                  JOptionPane.showOptionDialog(frameSelf, new Object[] {"Name: " + poiLabels.get(tempJLabel).getName() + "\n Layer: " + pLayer + "\n", addFavButton, editButton, deleteButton, "Click OK to Save. Close all menus to see results of edits made.",  "Admin cannot set favourites."},
                     "POI Information", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, null, null);
 //                   JOptionPane.showMessageDialog(frameSelf, "Name: " + poiLabels.get(tempJLabel).getName() + "\n Layer: " + pLayer + "\n", "POI Information", JOptionPane.INFORMATION_MESSAGE);
                 }
@@ -1545,6 +1597,8 @@ public class Application extends javax.swing.JFrame {
                 POI devPOI = new POI(nameField.getText(), devType, evt.getX(), evt.getY(), false);
                 System.out.println(currMap);
                 currMap.addPOI(nameField.getText(), devType, evt.getX(), evt.getY());
+                                           currPoiList = currMap.getPOIList();
+                                      loadCurrent(currPoiList);
                 //add to hashmap
                 int[] coord = {evt.getX(), evt.getY()};
                 this.poiLabels.put(somePOILabel, devPOI);
@@ -1567,6 +1621,8 @@ public class Application extends javax.swing.JFrame {
                 //make a new POI
                 POI newPOI = new POI(nameField.getText(), Category.CUSTOM, evt.getX(), evt.getY(), false);
                 currMap.addPOI(nameField.getText(), Category.CUSTOM, evt.getX(), evt.getY());
+                                           currPoiList = currMap.getPOIList();
+                                      loadCurrent(currPoiList);
                 //add to hashmap
                 int[] coord = {evt.getX(), evt.getY()};
                 this.poiLabels.put(somePOILabel, newPOI);
