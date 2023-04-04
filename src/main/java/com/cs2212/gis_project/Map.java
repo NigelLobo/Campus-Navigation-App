@@ -44,5 +44,21 @@ public class Map {
     public ArrayList<POI> getPOIList() {
         return listPOI;
     }
+    
+    @Override
+    public boolean equals(Object other) {
+        if (!this.getName().equals(((Map)other).getName()))
+            return false;
+        
+        if (this.listPOI.size() != ((Map)other).listPOI.size())
+            return false;
+        
+        for (int i = 0; i < this.listPOI.size(); i++) {
+            if (!this.listPOI.get(i).equals(((Map)other).listPOI.get(i)))
+                return false;
+        }
+        
+        return true;
+    }
  
 }

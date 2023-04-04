@@ -56,4 +56,17 @@ public class POI {
     public boolean getFavouriteStatus() {
         return this.isFavourite;
     }
+    
+    @Override
+    public boolean equals(Object other)
+    {
+        if (name.equals(((POI)other).getName()) &&
+            category == ((POI)other).getType() &&
+            position[0] == ((POI)other).position[0] &&
+            position[1] == ((POI)other).position[1] &&
+            isFavourite == ((POI)other).isFavourite)
+            return true;
+        
+        return false;
+    }
 }
