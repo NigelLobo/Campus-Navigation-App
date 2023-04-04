@@ -3,7 +3,7 @@ import java.util.ArrayList;
 
 public class Map {
     private String mapName;
-    public ArrayList listPOI = new ArrayList();
+    public ArrayList<POI> listPOI = new ArrayList();
 
     public Map(String name) {
         this.mapName = name;
@@ -14,7 +14,7 @@ public class Map {
     }
 
     public void addPOI(String name,Category type, int x, int y) {
-        POI newPOI = new POI(name,type,x,y);
+        POI newPOI = new POI(name,type,x,y, false);
         listPOI.add(newPOI);
     }
 

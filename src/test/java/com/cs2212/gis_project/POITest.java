@@ -39,7 +39,7 @@ public class POITest {
     @Test
     public void testGetName() {
         System.out.println("getName");
-        POI instance = new POI("MC 203", Category.CLASSROOM , 0,0);
+        POI instance = new POI("MC 203", Category.CLASSROOM , 0,0, false);
         String expResult = "MC 203";
         String result = instance.getName();
         assertEquals(expResult, result);
@@ -52,7 +52,7 @@ public class POITest {
     public void testSetName() {
         System.out.println("setName");
         String newName = "AH 100";
-        POI instance = new POI("MC 203", Category.CLASSROOM , 0,0);
+        POI instance = new POI("MC 203", Category.CLASSROOM , 0,0, false);
         instance.setName(newName);
         assertTrue(instance.getName().equals("AH 100"));
     }
@@ -63,7 +63,7 @@ public class POITest {
     @Test
     public void testGetType() {
         System.out.println("getType");
-        POI instance = new POI("MC 203",Category.CLASSROOM , 0,0);
+        POI instance = new POI("MC 203",Category.CLASSROOM , 0,0, false);
         Category expResult = Category.CLASSROOM;
         Category result = instance.getType();
         assertEquals(expResult, result);
@@ -76,7 +76,7 @@ public class POITest {
     public void testSetType() {
         System.out.println("setType");
         Category type = Category.ELEVATOR;
-        POI instance = new POI("MC 203", Category.CLASSROOM , 0,0);
+        POI instance = new POI("MC 203", Category.CLASSROOM , 0,0, false);
         instance.setType(type);
         assertTrue(instance.getType() == Category.ELEVATOR);
         
@@ -88,7 +88,7 @@ public class POITest {
     @Test
     public void testGetPosition() {
         System.out.println("getPosition");
-        POI instance = new POI("MC 203", Category.CLASSROOM , 3,4);
+        POI instance = new POI("MC 203", Category.CLASSROOM , 3,4, false);
         int[] expResult = {3,4} ;
         int[] result = instance.getPosition();
         assertArrayEquals(expResult, result);
@@ -105,7 +105,7 @@ public class POITest {
         expResult[0] = x;
         int y = 5;
         expResult[1] = y;
-        POI instance = new POI("MC 203", Category.CLASSROOM , 3,4);
+        POI instance = new POI("MC 203", Category.CLASSROOM , 3,4, false);
         instance.setPosition(x, y);
         assertArrayEquals(expResult, instance.getPosition());
     }
@@ -126,7 +126,7 @@ public class POITest {
     @Test
     public void testSetActive() {
         System.out.println("setActive");
-        POI instance = new POI("MC 203", Category.CLASSROOM , 3,4);
+        POI instance = new POI("MC 203", Category.CLASSROOM , 3,4, false);
         instance.setActive(false);
         assertTrue(instance.getActive() == false);
     }
@@ -138,7 +138,7 @@ public class POITest {
     @Test
     public void testSetFavouriteStatus() {
         System.out.println("setFavouriteStatus");
-        POI instance = new POI("MC 203", Category.CLASSROOM , 3,4);
+        POI instance = new POI("MC 203", Category.CLASSROOM , 3,4, false);
         instance.setFavouriteStatus(true);
         assertTrue(instance.getFavouriteStatus() == true);
     }

@@ -15,6 +15,7 @@ import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,9 +29,27 @@ import org.json.simple.parser.ParseException;
 public class GIS_System {
     
     private static final GIS_System s_Instance = new GIS_System();
-    private User currentUser = null;
     
-    private GIS_System() {}
+    private HashMap<String, Category> stringToCategory;
+    private HashMap<Category, String> categoryToString;
+    
+    private GIS_System() {
+        stringToCategory = new HashMap<String, Category>();
+        stringToCategory.put("C", Category.CLASSROOM);
+        stringToCategory.put("R", Category.RESTAURANT);
+        stringToCategory.put("L", Category.LAB);
+        stringToCategory.put("W", Category.WASHROOM);
+        stringToCategory.put("E", Category.ELEVATOR);
+        stringToCategory.put("T", Category.CUSTOM);
+        
+        categoryToString = new HashMap<Category, String>();
+        categoryToString.put(Category.CLASSROOM, "C");
+        categoryToString.put(Category.RESTAURANT, "R");
+        categoryToString.put(Category.LAB, "L");
+        categoryToString.put(Category.WASHROOM, "W");
+        categoryToString.put(Category.ELEVATOR, "E");
+        categoryToString.put(Category.CUSTOM, "T");
+    }
     
     public static GIS_System getInstance()
     {
@@ -40,8 +59,9 @@ public class GIS_System {
     public boolean login(String username, String password)
     {
         try {
-            URL obj = this.getClass().getClassLoader().getResource("data/app.json");    
-            String contents = new String(Files.readAllBytes(Paths.get(obj.getFile())));
+            //URL obj = this.getClass().getClassLoader().getResource("data/app.json"); 
+            String path = "src/resources/data/app.json";
+            String contents = new String(Files.readAllBytes(Paths.get(path)));
             JSONObject buildings = new JSONObject(contents);
             JSONObject user = buildings.getJSONObject("user");
             if (username.equals(user.get("username")) && password.equals(user.get("password")))
@@ -55,13 +75,14 @@ public class GIS_System {
         }
     }
     
-    public Map[] Load()
+    public Map[] Load(String path)
     {
         try {
-            JSONParser parser = new JSONParser();
-            URL obj = this.getClass().getClassLoader().getResource("data/app.json");
-            
-            String contents = new String(Files.readAllBytes(Paths.get(obj.getFile())));
+            //JSONParser parser = new JSONParser();
+            //URL obj = this.getClass().getClassLoader().getResource("data/app.json");
+            //String path = "src/resources/data/app.json";
+            String contents = new String(Files.readAllBytes(Paths.get(path)));
+            //Reader reader = new InputStreamReader(obj.openStream());
             JSONObject buildings = new JSONObject(contents);
             JSONObject alumni = buildings.getJSONObject("ALUMNI");
             JSONObject middlesex = buildings.getJSONObject("MIDDLESEX");
@@ -69,7 +90,7 @@ public class GIS_System {
             
             Map[] maps = new Map[13];
             
-            int floorLevel = 1;
+            int floorLevel = 2;
             for (int i = 0; i < 3; i++)
             {
                 JSONArray poiList = alumni.getJSONArray("LEVEL_" + floorLevel);
@@ -77,7 +98,9 @@ public class GIS_System {
                 for (int j = 0; j < poiList.length(); j++)
                 {
                     JSONObject currentPOI = poiList.getJSONObject(j);
-                    POI poi = new POI((String)currentPOI.get("name"), (Category)currentPOI.get("type"), (Integer)currentPOI.get("posX"), (Integer)currentPOI.get("posY"));
+                    String category = (String)currentPOI.get("type");
+                         
+                    POI poi = new POI((String)currentPOI.get("name"), stringToCategory.get(category), (Integer)currentPOI.get("posX"), (Integer)currentPOI.get("posY"), (Boolean)currentPOI.get("isFavourite"));
                     pois.add(poi);
                 }
                 maps[i] = new Map("ALUMNI_" + floorLevel);
@@ -85,7 +108,7 @@ public class GIS_System {
                 floorLevel++;
             }
             
-            floorLevel = 1;
+            floorLevel = 2;
             for (int i = 3; i < 8; i++)
             {
                 JSONArray poiList = middlesex.getJSONArray("LEVEL_" + floorLevel);
@@ -93,7 +116,9 @@ public class GIS_System {
                 for (int j = 0; j < poiList.length(); j++)
                 {
                     JSONObject currentPOI = poiList.getJSONObject(j);
-                    POI poi = new POI((String)currentPOI.get("name"), (Category)currentPOI.get("type"), (Integer)currentPOI.get("posX"), (Integer)currentPOI.get("posY"));
+                    String category = (String)currentPOI.get("type");
+                         
+                    POI poi = new POI((String)currentPOI.get("name"), stringToCategory.get(category), (Integer)currentPOI.get("posX"), (Integer)currentPOI.get("posY"), (Boolean)currentPOI.get("isFavourite"));
                     pois.add(poi);
                 }
                 maps[i] = new Map("MIDDLESEX_" + floorLevel);
@@ -109,7 +134,9 @@ public class GIS_System {
                 for (int j = 0; j < poiList.length(); j++)
                 {
                     JSONObject currentPOI = poiList.getJSONObject(j);
-                    POI poi = new POI((String)currentPOI.get("name"), (Category)currentPOI.get("type"), (Integer)currentPOI.get("posX"), (Integer)currentPOI.get("posY"));
+                    String category = (String)currentPOI.get("type");
+                         
+                    POI poi = new POI((String)currentPOI.get("name"), stringToCategory.get(category), (Integer)currentPOI.get("posX"), (Integer)currentPOI.get("posY"), (Boolean)currentPOI.get("isFavourite"));
                     pois.add(poi);
                 }
                 maps[i] = new Map("NORTH_CAMPUS_" + floorLevel);
@@ -131,25 +158,26 @@ public class GIS_System {
         }
     }
     
-    public void Save(Map[] maps)
+    public boolean Save(Map[] maps, String path)
     {
         JSONObject buildings = new JSONObject();
         JSONObject alumni = new JSONObject();
         JSONObject middlesex = new JSONObject();
         JSONObject ncb = new JSONObject();
         
-        int floorLevel = 1;
+        int floorLevel = 2;
         for (int i = 0; i < 3; i++)
         {
             JSONArray poiList = new JSONArray();
            for (int j = 0; j < maps[i].listPOI.size(); j++)
            {
                JSONObject poiData = new JSONObject();
-               POI poi = (POI) maps[i].listPOI.get(j);
+               POI poi = maps[i].listPOI.get(j);
                poiData.put("name", poi.getName());
-               poiData.put("type", poi.getType());
+               poiData.put("type", categoryToString.get(poi.getType()));
                poiData.put("posX", poi.getPosition()[0]);
                poiData.put("posY", poi.getPosition()[1]);
+               poiData.put("isFavourite", poi.getFavouriteStatus());
                
                poiList.put(poiData);
            }
@@ -160,18 +188,19 @@ public class GIS_System {
         
         buildings.put("ALUMNI", alumni);
         
-        floorLevel = 1;
+        floorLevel = 2;
         for (int i = 3; i < 8; i++)
         {
              JSONArray poiList = new JSONArray();
            for (int j = 0; j < maps[i].listPOI.size(); j++)
            {
                JSONObject poiData = new JSONObject();
-               POI poi = (POI) maps[i].listPOI.get(j);
+               POI poi = maps[i].listPOI.get(j);
                poiData.put("name", poi.getName());
-               poiData.put("type", poi.getType());
+               poiData.put("type", categoryToString.get(poi.getType()));
                poiData.put("posX", poi.getPosition()[0]);
                poiData.put("posY", poi.getPosition()[1]);
+               poiData.put("isFavourite", poi.getFavouriteStatus());
                
                poiList.put(poiData);
            }
@@ -189,11 +218,12 @@ public class GIS_System {
            for (int j = 0; j < maps[i].listPOI.size(); j++)
            {
                JSONObject poiData = new JSONObject();
-               POI poi = (POI) maps[i].listPOI.get(j);
+               POI poi = maps[i].listPOI.get(j);
                poiData.put("name", poi.getName());
-               poiData.put("type", poi.getType());
+               poiData.put("type", categoryToString.get(poi.getType()));
                poiData.put("posX", poi.getPosition()[0]);
                poiData.put("posY", poi.getPosition()[1]);
+               poiData.put("isFavourite", poi.getFavouriteStatus());
                
                poiList.put(poiData);
            }
@@ -204,13 +234,23 @@ public class GIS_System {
         
         buildings.put("NORTH_CAMPUS", ncb);
         
-        /* NOT THE PROPER FILE PATH */
-        URL obj = this.getClass().getClassLoader().getResource("data/app.json");
-        try (FileWriter file = new FileWriter(obj.getFile())) {
+        //USERNAME AND PASSWORD FOR ADMIN
+        JSONObject user = new JSONObject();
+        user.put("username", "Admin");
+        user.put("password", "123456");
+
+        buildings.put("user", user);
+        
+        //URL obj = this.getClass().getClassLoader().getResource("data/app.json");
+        //String path = "src/resources/data/app.json";
+        try (FileWriter file = new FileWriter(path)) {
             file.write(buildings.toString());
+            return true;
         }
         catch(IOException e) {
             e.printStackTrace();
         }
+        
+        return false;
     }
 }

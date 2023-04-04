@@ -58,12 +58,13 @@ public class Application extends javax.swing.JFrame {
 //    private String[] mapFiles = { "maps/mc0.png", "maps/mc1.png", "maps/mc2.png", "maps/mc3.png", "maps/mc4.png"};
     //private Map activeMapObj;
     //private Map map = new Map("MIDDLESEX");
-    private POI[] currPoiList;
+    private ArrayList<POI> currPoiList;
     private Map[] listOfMaps;
     private HashMap<String, int[]> poiNameToPos = new HashMap<>(); //key: poi name, value: (x,y) coords as array
     private HashMap<javax.swing.JLabel, POI> poiLabels = new HashMap<>(); //key: poi jlabel reference, value: POI obj reference
     private HashMap<Category, Boolean> activeLayers = new HashMap<>(); //key: Category enum type, value: true or false
     private HashMap<String, Map> maps = new HashMap<>(); //key: map name, value: map object
+//    private HashMap<String, String> jsonMapToName = new HashMap<>();
     private GIS_System gis_system = GIS_System.getInstance();
 
     /**
@@ -101,6 +102,8 @@ public class Application extends javax.swing.JFrame {
      */
     public void start(String chosenBuilding) {
         
+        if (devMode) userModeLabel.setText("Admin Mode");
+        else userModeLabel.setText("Guest Mode");
 //        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 //        Component frameSelf = this;
 //        this.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -115,7 +118,11 @@ public class Application extends javax.swing.JFrame {
 //            }
 //        });
 
-//        listOfMaps = gis_system.load(); //get all 13 maps loaded with the poi data 
+        listOfMaps = gis_system.Load("src/resources/data/app.json"); //get all 13 maps loaded with the poi data
+        for (Map m : listOfMaps) {
+            maps.put(m.getName(), m);
+            System.out.println("Loaded map: " + m.getName());
+        }
         
         System.out.println(chosenBuilding + " chosen...");
         buildingSelectPanel.setVisible(false);
@@ -126,9 +133,18 @@ public class Application extends javax.swing.JFrame {
         favList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
         String defaultLevel = "";
-        if (chosenBuilding.equals("MIDDLESEX COLLEGE")) defaultLevel = "LEVEL_2.png";
-        else if (chosenBuilding.equals("ALUMNI HALL")) defaultLevel = "LEVEL_2.png";
-        else defaultLevel = "LEVEL_1.png";
+        if (chosenBuilding.equals("MIDDLESEX COLLEGE")) {
+            defaultLevel = "LEVEL_2.png";
+            this.activeMap = "MIDDLESEX_2";
+        }
+        else if (chosenBuilding.equals("ALUMNI HALL")) {
+            defaultLevel = "LEVEL_2.png";
+            this.activeMap = "ALUMNI_2";
+        }
+        else {
+            defaultLevel = "LEVEL_1.png";
+            this.activeMap = "NORTH_CAMPUS_1";
+        }
         
         //set map image for chosen building. Default to ground floor for each 
         String path = "/maps/" + chosenBuilding.toUpperCase() + "_" + defaultLevel;
@@ -175,50 +191,191 @@ public class Application extends javax.swing.JFrame {
     }
     
     public void loadPOIs(String buildingFloorFilePath) {
-//          Map currMap = maps.get(buildingFloorFilePath);
+        String buildingName = "";
+        String floorNum = "";
+        if (buildingFloorFilePath.contains("MIDDLESEX")) buildingName = "MIDDLESEX";
+        else if (buildingFloorFilePath.contains("ALUMNI")) buildingName = "ALUMNI";
+        else if (buildingFloorFilePath.contains("NORTH")) buildingName = "NORTH_CAMPUS";
+        
+        buildingFloorFilePath = buildingFloorFilePath.substring(0, buildingFloorFilePath.length() - 4);
+        floorNum = buildingFloorFilePath.substring(buildingFloorFilePath.length() - 1, buildingFloorFilePath.length());
+        this.activeMap = buildingName + "_" + floorNum;
+        currMap = maps.get(buildingName + "_" + floorNum);
+        currPoiList = currMap.getPOIList();
 //          ArrayList<POI> poiList = currMap.getPOIList();
-//          String[] names = new String[poiList.size()];
-//          for (int i = 0; i < poiList.size(); i++) {
-//              names[i] = poiList.get(i).getName();
-//          }
+        String[] names = new String[currPoiList.size()];
+        for (int i = 0; i < currPoiList.size(); i++) {
+            names[i] = currPoiList.get(i).getName();
+        }
         guiPOIList.setModel(new javax.swing.AbstractListModel<String>() {
 //            String[] strings = names; //SHOULD BE THIS
-            String[] strings = { "some poi 1", "some poi 2", "some poi 3", "some poi 4", "some poi 5" }; 
+            String[] strings = names; 
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
         Component frameSelf = this;
 //        POI[] poiList= {};// = map.getPOIList()
-//        for (POI p : poiList) {
-//            int[] pos = p.getPosition();
-//            javax.swing.JLabel somePOILabel = new javax.swing.JLabel();
-//            somePOILabel.setBounds(pos[0], pos[1],75,75);//CHANGE THE SCALE
-//            somePOILabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/poi.png")));
-//            mapImageLabel.add(somePOILabel,new Integer(10));
-//            poiLabels.put(somePOILabel, p);
-    //        somePOILabel.addMouseListener(new MouseAdapter() {
-    //                        @Override
-    //                        public void mouseClicked(MouseEvent e) {
-//                                String pLayer = "";
-                    ////          switch(p.getType()) {
-                    //            case Category.CLASSROOM: pLayer = "Classroom";
-                    //            case Category.WASHROOM: pLayer = "Washroom";
-                    //            case Category.ELEVATOR: pLayer = "Elevator";
-                    //            case Category.CUSTOM: pLayer = "Custom";
-                    //            case Category.LAB: pLayer = "Lab";
-                    //            case Category.RESTAURANT: pLayer = "Restaurant";
-                    //            default: break;
-        
-//        }
-//                               // builtin menu for regular user
-//                               if (!pLayer.equals("Custom")) {
-    //                               JOptionPane.showMessageDialog(frameSelf, "Layer: " + pLayer, p.getName(), JOptionPane.INFORMATION_MESSAGE);
-    //                           } else if (not admin) { //custom menu for builtins, regular user
-//                                  
-//                               } else { } //is admin??
-//                            }
-    //                    });
-//        }
+        for (POI p : currPoiList) {
+            int[] pos = p.getPosition();
+            javax.swing.JLabel somePOILabel = new javax.swing.JLabel();
+            somePOILabel.setBounds(pos[0], pos[1],75,75);//CHANGE THE SCALE
+            somePOILabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/poi.png")));
+            mapImageLabel.add(somePOILabel,new Integer(10));
+            poiLabels.put(somePOILabel, p);
+            javax.swing.JLabel labelRef = somePOILabel;
+            somePOILabel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                  String pLayer = "";
+                  switch(p.getType()) {
+                    case CLASSROOM: pLayer = "Classroom";break;
+                    case WASHROOM: pLayer = "Washroom";break;
+                    case ELEVATOR: pLayer = "Elevator";break;
+                    case CUSTOM: pLayer = "Custom";break;
+                    case LAB: pLayer = "Lab";break;
+                    case RESTAURANT: pLayer = "Restaurant";break;
+                    default: break;
+
+                  }
+//                 // builtin menu (admin only)
+                   if (devMode && !pLayer.equals("Custom")) {
+                       JTextField builtinName = new JTextField(p.getName());
+                       
+                       JButton deleteButton = new JButton("Delete");
+                        deleteButton.addActionListener(new ActionListener() {
+                              @Override
+                              public void actionPerformed(ActionEvent e) {
+      //                            
+                                    //delete POI entry from Map
+                                    String poiName = poiLabels.get(labelRef).getName();
+                                    currMap.deletePOI(poiName); 
+
+                                    //delete JLabel entry
+                                    poiLabels.remove(labelRef);
+                                    mapImageLabel.repaint();
+                                    mapImageLabel.remove(labelRef);
+                                    gis_system.Save(listOfMaps,"src/resources/data/app.json");
+                              }
+                        });
+
+                        JButton editButton = new JButton("Edit");
+                        editButton.addActionListener(new ActionListener() {
+                              @Override
+                              public void actionPerformed(ActionEvent e) {
+                                    //make a popup... get the data from the action listener...
+                                    JTextField editName = new JTextField();
+                                    String[] types = {"Classroom", "Restaurant", "Lab", "Washroom", "Elevator"};
+                                    Category[] typesEnum = {Category.CLASSROOM, Category.RESTAURANT, Category.LAB, Category.WASHROOM, Category.ELEVATOR};
+                                    JComboBox layerDropdown = new JComboBox(types);
+                                    int result = JOptionPane.showOptionDialog(frameSelf, new Object[] {"Edit name", editName, "Edit Layer", layerDropdown, "Press OK to Save. Close all menus and click again to see results."},
+                          "Edit POI Information", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, null, null);
+                                    
+                                 if (result == JOptionPane.OK_OPTION) {
+                                     Category devType = typesEnum[layerDropdown.getSelectedIndex()];
+                                     System.out.println(devType);
+                                      //delete poi from map
+                                      String poiName = poiLabels.get(labelRef).getName();
+                                      currMap.deletePOI(poiName);
+                                      //add poi back into map
+                                      int[] pos = poiLabels.get(labelRef).getPosition();
+                                      POI editedPOI = new POI(editName.getText(), devType, pos[0], pos[1], false);
+                                      currMap.addPOI(editName.getText(), devType, pos[0], pos[1]);
+                                      poiLabels.remove(labelRef);
+                                      poiLabels.put(labelRef, editedPOI);
+                                      gis_system.Save(listOfMaps,"src/resources/data/app.json");
+                                      mapImageLabel.repaint();
+                                 }
+
+                              }
+                        });
+
+                        JOptionPane.showOptionDialog(frameSelf, new Object[] {"Name: " + poiLabels.get(labelRef).getName() + "\n Layer: " + pLayer + "\n", editButton, deleteButton, "Close Menu to see changes made from editing."},
+                          "Builtin POI Information", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, null, null);
+
+                   } 
+                   //custom (admin and guest can edit)
+                   else if (pLayer.equals("Custom")) { //custom menu for builtins, regular user
+                       JTextField builtinName = new JTextField(p.getName());
+                       
+                       JButton deleteButton = new JButton("Delete");
+                        deleteButton.addActionListener(new ActionListener() {
+                              @Override
+                              public void actionPerformed(ActionEvent e) {
+      //                            
+                                    //delete POI entry from Map
+                                    String poiName = poiLabels.get(labelRef).getName();
+                                    currMap.deletePOI(poiName); 
+
+                                    //delete JLabel entry
+                                    poiLabels.remove(labelRef);
+                                    mapImageLabel.repaint();
+                                    mapImageLabel.remove(labelRef);
+                                    gis_system.Save(listOfMaps,"src/resources/data/app.json");
+                              }
+                        });
+
+                        JButton editButton = new JButton("Edit");
+                        editButton.addActionListener(new ActionListener() {
+                              @Override
+                              public void actionPerformed(ActionEvent e) {
+                                    //make a popup... get the data from the action listener...
+                                    JTextField editName = new JTextField();
+                                    int result = JOptionPane.showOptionDialog(frameSelf, new Object[] {"Edit name", editName, "Press OK to Save. Close all menus and click again to see results."},
+                          "Edit Custom POI Information", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, null, null);
+                                    
+                                 if (result == JOptionPane.OK_OPTION) {
+                                 
+                                      //delete poi from map
+                                      String poiName = poiLabels.get(labelRef).getName();
+                                      currMap.deletePOI(poiName);
+                                      //add poi back into map
+                                      int[] pos = poiLabels.get(labelRef).getPosition();
+                                      POI editedPOI = new POI(editName.getText(), Category.CUSTOM, pos[0], pos[1], false);
+                                      currMap.addPOI(editName.getText(), Category.CUSTOM, pos[0], pos[1]);
+//                                      poiLabels.remove(labelRef);
+                                      poiLabels.put(labelRef, editedPOI);
+                                      gis_system.Save(listOfMaps,"src/resources/data/app.json");
+                                 }
+
+                              }
+                        });
+                        JOptionPane.showOptionDialog(frameSelf, new Object[] {"Name: " + poiLabels.get(labelRef).getName() + "\n Layer: " + pLayer + "\n", editButton, deleteButton, "Close Menu to see changes made from editing."},
+                          "Custom", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, null, null);
+                   }
+                   //builtin, guest
+                   else {
+                        JButton addFavButton = new JButton();
+                        String favStatus;
+                        if (poiLabels.get(labelRef).getFavouriteStatus() == true) favStatus = "Remove Favourite";
+                        else favStatus = "Add Favourite";
+                        addFavButton.setText(favStatus);
+                        addFavButton.addActionListener(new ActionListener() {
+                              @Override
+                              public void actionPerformed(ActionEvent e) {
+                                  String favStatus;
+                                  if (poiLabels.get(labelRef).getFavouriteStatus() == true) favStatus = "Remove Favourite";
+                                  else favStatus = "Add Favourite";
+                                  if (favStatus.equals("Add Favourite")) {
+                                      poiLabels.get(labelRef).setFavouriteStatus(true);
+                                      addFavButton.setText("Remove Favourite");
+                                      loadFavourites();
+                                  }
+                                  else {
+                                      poiLabels.get(labelRef).setFavouriteStatus(false);
+                                      addFavButton.setText("Add Favourite");
+                                      loadFavourites();
+                                  }
+                                  System.out.println("Set to " + poiLabels.get(labelRef).getFavouriteStatus());
+                                  addFavButton.repaint();
+                                  gis_system.Save(listOfMaps,"src/resources/data/app.json");
+                              }
+                        });
+                       JOptionPane.showOptionDialog(frameSelf, new Object[] {"Name: " + poiLabels.get(labelRef).getName() + "\n Layer: " + pLayer + "\n", addFavButton},
+                          "Builtin", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, null, null);
+                   }
+                }
+            });
+        }
 //***************************************************************TO BE REMOVED
 //        javax.swing.JLabel somePOILabel = new javax.swing.JLabel();
 //            somePOILabel.setBounds(100,100,75,75);//CHANGE THE SCALE
@@ -274,7 +431,7 @@ public class Application extends javax.swing.JFrame {
             
         }
         
-//        loadPOIs(filepath);
+        loadPOIs(filepath);
     }
 
     /**
@@ -309,6 +466,7 @@ public class Application extends javax.swing.JFrame {
                 int[] pos = p.getPosition();
                 mapImageScrollPane.getViewport().setViewPosition(new Point(pos[0], pos[1]));
                 System.out.println("Found POI!");
+                buildingPanel.setVisible(false);
                 return;
             }
         }
@@ -381,6 +539,7 @@ public class Application extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         searchField = new javax.swing.JTextField();
         searchButton = new javax.swing.JButton();
+        userModeLabel = new javax.swing.JLabel();
         buildingPanel = new javax.swing.JPanel();
         buildingChangeLabel = new javax.swing.JLabel();
         closeBuilding = new javax.swing.JLabel();
@@ -678,6 +837,10 @@ public class Application extends javax.swing.JFrame {
             }
         });
 
+        userModeLabel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        userModeLabel.setForeground(new java.awt.Color(255, 255, 255));
+        userModeLabel.setText("N/A");
+
         javax.swing.GroupLayout blackMenuPanelLayout = new javax.swing.GroupLayout(blackMenuPanel);
         blackMenuPanel.setLayout(blackMenuPanelLayout);
         blackMenuPanelLayout.setHorizontalGroup(
@@ -701,16 +864,15 @@ public class Application extends javax.swing.JFrame {
                         .addContainerGap()
                         .addGroup(blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1)
-                            .addGroup(blackMenuPanelLayout.createSequentialGroup()
-                                .addComponent(weatherLabel)
-                                .addGap(0, 19, Short.MAX_VALUE))
                             .addComponent(jScrollPane3)
-                            .addComponent(searchField))))
+                            .addComponent(searchField)
+                            .addGroup(blackMenuPanelLayout.createSequentialGroup()
+                                .addGroup(blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(weatherLabel)
+                                    .addComponent(searchButton)
+                                    .addComponent(userModeLabel))
+                                .addGap(0, 19, Short.MAX_VALUE)))))
                 .addContainerGap())
-            .addGroup(blackMenuPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(searchButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         blackMenuPanelLayout.setVerticalGroup(
             blackMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -737,9 +899,11 @@ public class Application extends javax.swing.JFrame {
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(helpButton)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(weatherLabel)
-                .addGap(35, 35, 35))
+                .addGap(18, 18, 18)
+                .addComponent(userModeLabel)
+                .addGap(12, 12, 12))
         );
 
         buildingPanel.setBackground(new java.awt.Color(204, 204, 204));
@@ -1026,7 +1190,7 @@ public class Application extends javax.swing.JFrame {
                 .addComponent(layerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(43, 43, 43)
                 .addComponent(customPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 161, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
             .addComponent(jLayeredPane1)
         );
 
@@ -1312,6 +1476,7 @@ public class Application extends javax.swing.JFrame {
                             }
                             System.out.println("Set to " + poiLabels.get(tempJLabel).getFavouriteStatus());
                             addFavButton.repaint();
+                            gis_system.Save(listOfMaps,"src/resources/data/app.json");
                         }
                   });
                   JButton deleteButton = new JButton("Delete");
@@ -1321,10 +1486,13 @@ public class Application extends javax.swing.JFrame {
 //                            
                               //delete POI entry from Map
                               String poiName = poiLabels.get(tempJLabel).getName();
-//                              currMap.deletePOI(poiName); //UNCOMMENT THIS
+                              currMap.deletePOI(poiName); 
 
                               //delete JLabel entry
                               poiLabels.remove(tempJLabel);
+                              mapImageLabel.repaint();
+                              mapImageLabel.remove(tempJLabel);
+                              gis_system.Save(listOfMaps,"src/resources/data/app.json");
                         }
                   });
                   
@@ -1333,12 +1501,30 @@ public class Application extends javax.swing.JFrame {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                               //make a popup... get the data from the action listener...
-                              //delete poi from map    
-                              //add poi back into map
+                              JTextField editName = new JTextField();
+                              String[] types = {"Classroom", "Restaurant", "Lab", "Washroom", "Elevator"};
+                              Category[] typesEnum = {Category.CLASSROOM, Category.RESTAURANT, Category.LAB, Category.WASHROOM, Category.ELEVATOR};
+                              JComboBox layerDropdown = new JComboBox(types);
+                              int result = JOptionPane.showOptionDialog(frameSelf, new Object[] {"Edit name", editName, "Edit Layer", "Click OK to Save. Close all menus to see results of edits made."},
+                    "Edit POI Information", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, null, null);
+                              Category devType = typesEnum[layerDropdown.getSelectedIndex()];
+                           if (result == JOptionPane.OK_OPTION) {
+                                //delete poi from map
+                                String poiName = poiLabels.get(tempJLabel).getName();
+                                currMap.deletePOI(poiName);
+                                //add poi back into map
+                                int[] pos = poiLabels.get(tempJLabel).getPosition();
+                                POI editedPOI = new POI(editName.getText(), devType, pos[0], pos[1], false);
+                                currMap.addPOI(editName.getText(), devType, pos[0], pos[1]);
+                                poiLabels.remove(tempJLabel);
+                                poiLabels.put(tempJLabel, editedPOI);
+                                gis_system.Save(listOfMaps,"src/resources/data/app.json");
+                           }
+                           
                         }
                   });
                   
-                  JOptionPane.showOptionDialog(frameSelf, new Object[] {"Name: " + poiLabels.get(tempJLabel).getName() + "\n Layer: " + pLayer + "\n", addFavButton, editButton, deleteButton},
+                  JOptionPane.showOptionDialog(frameSelf, new Object[] {"Name: " + poiLabels.get(tempJLabel).getName() + "\n Layer: " + pLayer + "\n", addFavButton, editButton, deleteButton, "Click OK to Save. Close all menus to see results of edits made."},
                     "POI Information", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, null, null);
 //                   JOptionPane.showMessageDialog(frameSelf, "Name: " + poiLabels.get(tempJLabel).getName() + "\n Layer: " + pLayer + "\n", "POI Information", JOptionPane.INFORMATION_MESSAGE);
                 }
@@ -1356,14 +1542,17 @@ public class Application extends javax.swing.JFrame {
             if (result == JOptionPane.OK_OPTION) {
                 //make a new POI
                 Category devType = typesEnum[layerDropdown.getSelectedIndex()];
-                POI devPOI = new POI(nameField.getText(), devType, evt.getX(), evt.getY());
-                //map.addPOI(nameField.getText(), 0, Category.CUSTOM, evt.getX(), evt.getY())
+                POI devPOI = new POI(nameField.getText(), devType, evt.getX(), evt.getY(), false);
+                System.out.println(currMap);
+                currMap.addPOI(nameField.getText(), devType, evt.getX(), evt.getY());
                 //add to hashmap
                 int[] coord = {evt.getX(), evt.getY()};
                 this.poiLabels.put(somePOILabel, devPOI);
                 this.poiNameToPos.put(nameField.getText(), coord);
                 System.out.println(this.poiLabels.get(somePOILabel).getName());
-                //call system.save(all maps)
+                
+                //save to file
+                gis_system.Save(listOfMaps, "src/resources/data/app.json");
             }
             else if (result == JOptionPane.CANCEL_OPTION) {
                 mapImageLabel.remove(somePOILabel);
@@ -1376,14 +1565,16 @@ public class Application extends javax.swing.JFrame {
           "Create POI", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
             if (result == JOptionPane.OK_OPTION) {
                 //make a new POI
-                POI newPOI = new POI(nameField.getText(), Category.CUSTOM, evt.getX(), evt.getY());
-                //map.addPOI(nameField.getText(), 0, Category.CUSTOM, evt.getX(), evt.getY())
+                POI newPOI = new POI(nameField.getText(), Category.CUSTOM, evt.getX(), evt.getY(), false);
+                currMap.addPOI(nameField.getText(), Category.CUSTOM, evt.getX(), evt.getY());
                 //add to hashmap
                 int[] coord = {evt.getX(), evt.getY()};
                 this.poiLabels.put(somePOILabel, newPOI);
                 this.poiNameToPos.put(nameField.getText(), coord);
                 System.out.println(this.poiLabels.get(somePOILabel).getName());
-                //call system.save(all maps)
+                
+                //save to file
+                gis_system.Save(listOfMaps, "src/resources/data/app.json");
             }
             else if (result == JOptionPane.CANCEL_OPTION) {
                 mapImageLabel.remove(somePOILabel);
@@ -1486,6 +1677,7 @@ public class Application extends javax.swing.JFrame {
     private javax.swing.JButton searchButton;
     private javax.swing.JTextField searchField;
     private javax.swing.JLabel selectBuildingLabel;
+    private javax.swing.JLabel userModeLabel;
     private javax.swing.JLabel usernameLabel;
     private javax.swing.JTextField usernameTextField;
     private javax.swing.JCheckBox washroomCheckbox;

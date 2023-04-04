@@ -9,10 +9,11 @@ public class POI {
     private boolean active = true;
     private boolean isFavourite = false;
     
-    public POI(String name, Category category, int x, int y) {
+    public POI(String name, Category category, int x, int y, boolean isFav) {
         this.name = name;
         this.category = category;
         this.position = new int[]{x,y};
+        this.isFavourite = isFav;
     }
     
     public String getName() {
