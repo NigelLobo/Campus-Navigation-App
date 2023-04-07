@@ -1,4 +1,3 @@
-
 package com.cs2212.gis_project;
 
 import org.junit.jupiter.api.AfterEach;
@@ -151,6 +150,20 @@ public class POITest {
         System.out.println("getFavouriteStatus");
         boolean expResult = false;
         assertFalse(expResult);
+    }
+    
+
+    /**
+     * Test of equals method, of class POI.
+     */
+    @Test
+    public void testEquals() {
+        System.out.println("equals");
+        Object other = new POI("MC 203", Category.CLASSROOM , 3,4, false);
+        POI instance = new POI("MC 203", Category.CLASSROOM , 3,4, false);
+        boolean expResult = true;
+        boolean result = instance.equals(other);
+        assertEquals(expResult, result);
     }
     
 }

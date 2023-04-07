@@ -25,55 +25,91 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
+ * This class handles fetching and returning weather data via API requests
  *
  * @author Daniel Hoang
  */
 public class Weather {
 
-    HttpClient client = HttpClient.newHttpClient();
-    int londonLat;
-    int londonLng;
-    JSONObject weatherAPIJSON;
-    String url = "https://api.open-meteo.com/v1/forecast?latitude=42.98&longitude=-81.23&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=America%2FNew_York";
-    HttpResponse<String> response;
-    String responsebody;
+    /**
+     * HttpClient handles network requests
+     */
+    private HttpClient client = HttpClient.newHttpClient();
 
+    /**
+     * London's latitude value
+     */
+    private int londonLat;
+
+    /**
+     * London's Longitude value
+     */
+    private int londonLng;
+
+    /**
+     * JSONObject that will store the weather data requested
+     */
+    private JSONObject weatherAPIJSON;
+
+    /**
+     * Link to the Open Mateo API.
+     */
+    private final String url = "https://api.open-meteo.com/v1/forecast?latitude=42.98&longitude=-81.23&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=America%2FNew_York";
+
+    /**
+     * Stores the response from the GET request
+     */
+    private HttpResponse<String> response;
+
+    /**
+     * Stores content of the response
+     */
+    private String responsebody;
+
+    /**
+     * Denotes whether or not the internet is connected
+     */
+    public boolean internetIsOn;
+
+    /**
+     * Constructor for Weather class
+     */
     public Weather() {
-
+        internetIsOn = true;
     }
 
-//    public JSONObject getWeather() {
-//        JSONParser parser = new JSONParser();
-//        try {
-//            weatherAPIJSON = (JSONObject) parser.parse(responsebody);
-//            return weatherAPIJSON;
-//        } catch (Exception e) {
-//            return null;
-//        }
-//    }
-
+    /**
+     * Sends an HTTP GET request to the specified URL with a JSON header and
+     * returns the current temperature as a double value. If the response code
+     * is not 200, a RuntimeException is thrown.
+     *
+     * @return the current temperature as a double value, or Double.MAX_VALUE if
+     * the request fails
+     */
     public double getTodaysTemp() {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")
                 .build();
         try {
+            //send request to API
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() != 200) {
                 throw new RuntimeException("Failed : HTTP error code : " + response.statusCode());
             }
             responsebody = response.body();
-            
+
+            //parse the JSON response.body
             JSONParser parser = new JSONParser();
             weatherAPIJSON = (JSONObject) parser.parse(responsebody);
-            
-            
+
+            //Extract the current weather information and todays temp
             JSONObject current = (JSONObject) weatherAPIJSON.get("current_weather");
             double current_temp = (double) current.get("temperature");
             return current_temp;
         } catch (Exception e) {
             System.out.println("Fetch Request Failed");
-            return Double.MAX_VALUE;    
+            return Double.MAX_VALUE;
         }
     }
 }

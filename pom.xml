@@ -9,7 +9,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>19</maven.compiler.source>
         <maven.compiler.target>19</maven.compiler.target>
-        <exec.mainClass>com.cs2212.gis_project.GIS_Project</exec.mainClass>
+        <exec.mainClass>com.cs2212.gis_project.Application</exec.mainClass>
     </properties>
     <dependencies>
         <dependency>
@@ -66,7 +66,7 @@
                   <configuration>
                     <archive>
                       <manifest>
-                        <mainClass>com.cs2212.gis_project.GIS_Project</mainClass>
+                        <mainClass>com.cs2212.gis_project.Application</mainClass>
                       </manifest>
                     </archive>
                     <descriptorRefs>

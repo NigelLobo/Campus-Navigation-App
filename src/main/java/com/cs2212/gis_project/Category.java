@@ -9,10 +9,28 @@ package com.cs2212.gis_project;
  * @author nlobo9
  */
 public enum Category {
+    /**
+     * Represents classrooms
+     */
     CLASSROOM,
+    /**
+     * Represents restaurants
+     */
     RESTAURANT,
+    /**
+     * Represents labs
+     */
     LAB,
+    /**
+     * Represents washrooms
+     */
     WASHROOM,
+    /**
+     * Represents elevators and stairwells
+     */
     ELEVATOR,
+    /**
+     * Represents custom POIs made in Guest Mode
+     */
     CUSTOM;
 }

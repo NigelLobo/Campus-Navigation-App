@@ -69,6 +69,7 @@ public class GIS_System {
     
     /**
      * Reads the JSON file and determines if the provided username and password match the admin one.
+     * @param path filepath to check for username and password in
      * @param username A string containing the specified username to be checked.
      * @param password A string containing the specified password to be checked.
      * @return true if the username and password match, false otherwise.
@@ -268,7 +269,7 @@ public class GIS_System {
         
         //USERNAME AND PASSWORD FOR ADMIN
         JSONObject user = new JSONObject();
-        user.put("username", "Bobby");
+        user.put("username", "Admin");
         user.put("password", "123456");
         
         buildings.put("user", user);
