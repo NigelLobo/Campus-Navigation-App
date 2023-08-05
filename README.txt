@@ -4,7 +4,7 @@ This software allows users to browse Points of Interest within Western Campus Bu
 
 Java 19, Maven, JUnit5 and Windows 10 are required to build and run the software.
 
-To compile from source code via NetBeans, press "Clean and Build" and then "Run", which will execute the main function in the Application class. You may also choose to right-click on the Application.java file and hit "Run File". From the terminal, you may also run the command "java Application.java". 
+To run the application, simply click on "EXECUTABLE Group 42 Application.jar". To compile from source code via NetBeans, press "Clean and Build" and then "Run", which will execute the main function in the Application class. You may also choose to right-click on the Application.java file and hit "Run File". 
 
 There are two modes in the program: Admin and Guest Mode. The username and password for Admin mode is "Admin" and "123456" respectively. 
 
